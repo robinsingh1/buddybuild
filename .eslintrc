@@ -1,0 +1,22 @@
+{
+  "plugins": [
+    "react",
+    "react-native"
+  ],
+  "extends": ["eslint:recommended", "plugin:react/recommended"],
+  "ecmaFeatures": {
+    "ecmaVersion": 6,
+    "jsx": true
+  },
+  "parser": "babel-eslint",
+  "rules": {
+    "strict": 0
+  },
+  "globals": { 
+    "fetch": false,
+    "clearInterval": false,
+    "require": false,
+    "navigator": false,
+    "setInterval": false 
+  }
+}
