@@ -58,39 +58,31 @@ function reducer(state = {}, action) {
 let store = createStore(reducer);
 const Router = connect()(require("react-native-router-flux").Router);
 
-var Main = React.createClass({
-  getInitialState: function() {
-    return {
+class Main extends React.Component {
+  constructor() {
+    super()
+    this.state = {
       page: "upcoming",
       lastLoaded: 0,
       upcomingEvents: [],
       pastEvents: [],
     }
-  },
+  }
 
-  onSelect: function(el) {
-    console.log(el)
-    console.log(el.refs)
-    console.log(el.nativeEvent)
-    console.log(this.refs.upcoming)
-    //this.setState({page: el.props.name});
-    //return {}
-  },
-
-  pastSelect: function(el) {
+  pastSelect = (el) => {
     this.setState({page: "past"});
-  },
+  }
 
-  upcomingSelect: function(el) {
+  upcomingSelect = (el) => {
     this.setState({page: "upcoming"});
-  },
+  }
 
-  onRefresh: function() {
+  onRefresh = () => {
     console.log("refresh")
     this.setState({lastLoaded: moment().valueOf()})
-  },
+  }
 
-  sortEvents: function(events) {
+  sortEvents(events) {
     var sorted_events = {},
     formatOfDates = 'dddd MMM Do';
     _.map(events, function(visit){ 
@@ -99,9 +91,9 @@ var Main = React.createClass({
           sorted_events[date] = [];
       sorted_events[date].push(visit);
     });
-  },
+  }
 
-  loadEvents: function(page) {
+  loadEvents(page) {
     url = App.event_url+this.state.page
     url = App.past_event_url+this.state.page
 
@@ -116,10 +108,10 @@ var Main = React.createClass({
                         dataSource: ds.cloneWithRowsAndSections(sorted_events) })
       }
     })
-  },
+  }
 
   render() {
-    var selected = {color:"#40BF93",textDecorationLine:"underline",textDecorationStyle:"solid",textDecorationColor:"#40BF93"}
+    var selected = {color:"#40BF93",textDecorationLine:"underline",textDecorationStyle:"solid",textDecorationColor:"#40BF93",fontWeight:"bold"}
     var unselected = {color:"#4A4A4A"}
     var sel = {marginTop: 0}; 
     var unsel = {marginTop:0, height:0, position:"absolute",left:10000}
@@ -142,9 +134,11 @@ var Main = React.createClass({
             <View style={{borderBottomWidth:1,borderColor:"#D2D2D2",backgroundColor:"#F0F0F0",height:60,flexDirection:"row",justifyContent:"space-between"}} >
             <TouchableOpacity onPress={this.upcomingSelect} ref="upcoming" name="upcoming" style={{padding:20,marginLeft:40}}>
               <Text name="upcoming" style={upcomingStyle}>UPCOMING</Text>
+              {(this.state.page == "upcoming") ? <View style={{height:2,width:73,backgroundColor:"#40BF93"}}/> : <View /> }
             </TouchableOpacity>
             <TouchableOpacity onPress={this.pastSelect} ref="past" name="past" style={{padding:20,marginRight:60}}>
               <Text name="past" style={pastStyle}>PAST</Text>
+              {(this.state.page == "past") ? <View style={{height:2,width:33,backgroundColor:"#40BF93"}}/> : <View /> }
             </TouchableOpacity>
           </View>
 
@@ -163,8 +157,8 @@ var Main = React.createClass({
         </View>
       </ScrollableTabView>
     )
-  },
-});
+  }
+}
 
 var Header = React.createClass({
   gotoSettings: function() {
@@ -201,7 +195,7 @@ var AwesomeProject = React.createClass({
 
           <Route name="launch" schema="default" component={Main} initial={true} title="SAGE" header={Header} />
           <Route name="map_detail" schema="default" component={MapView} initial={false} title="SAGE" header={MapHeader} />
-          <Route name="splash" schema="default" component={SplashScreen} initial={false} title="SAGE" />
+          <Route name="splash" schema="default" component={SplashScreen} initial={true} title="SAGE" />
           <Route name="notes_screen" component={TaskScreen} initial={false} />
           <Route name="next_notes_screen" component={TaskScreen}  />
           <Route name="medical_supplies" component={MedicalSupplyNote} initial={false}/>

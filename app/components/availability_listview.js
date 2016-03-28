@@ -19,8 +19,8 @@ var ds = new ListView.DataSource({
 })
 
 export default class AvailabilityListView extends React.Component {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     this.state = { 
       events:[],
       page:0,
@@ -28,6 +28,7 @@ export default class AvailabilityListView extends React.Component {
       loading: true,
       loadingMore: false
     }
+    this.renderRow = this.renderRow.bind(this)
   }
 
   componentWillReceiveProps(newProps, b) {
@@ -38,17 +39,17 @@ export default class AvailabilityListView extends React.Component {
     })
   }
 
-  deleteRow(rowData) {
+  deleteRow = (rowData) => {
     var _this = this;
     Alert.alert( 'Warning!', 'Are you sure you want to delete this availability?',
       [ {text: 'Cancel', onPress: () => console.log('Cancel'), style: 'cancel'},
         {text: 'Yes', onPress: () => { 
-          _this.props.deleteAvailability(rowData)    
+          _this.props.deleteAvailability(rowData).done()
         }}
       ])
   }
 
-  addRow(event) {
+  addRow = (event) => {
     this.setState({dataSource: ds.cloneWithRows([0,1,2,3,4])})
   }
 
@@ -58,10 +59,6 @@ export default class AvailabilityListView extends React.Component {
     d = Math.floor(d.getTime()/(1000*60*60*24*7));
     byweek[d]=byweek[d]||[];
     byweek[d].push(value);
-  }
-
-  onRefresh() {
-    console.log("refresh")
   }
 
   render() {
@@ -78,15 +75,11 @@ export default class AvailabilityListView extends React.Component {
     )
   }
 
-  loadData() {
+  loadData = () => {
     this.props.loadData()
   }
 
-  componentWillMount() {
-
-  }
-
-  sortEvents(events) {
+  sortEvents = (events) => {
     var formatOfDates = 'dddd MMM Do';
     var byweek = {}
     _.map(events, function(value) {
@@ -123,7 +116,7 @@ export default class AvailabilityListView extends React.Component {
 
   renderRow(rowData) {
     var year = moment(rowData.startTime).year()
-    var day = moment(rowData.startTime).year(year).format("dddd, MMM D")
+    var day = moment(rowData.startTime).year(year).format("ddd, MMM D")
     return ( <TouchableHighlight 
         style={styles.row} 
         underlayColor='#fff'

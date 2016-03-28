@@ -32,15 +32,18 @@ export default class AvailabilityView extends React.Component {
       empty: false,
       loadingMore: false
     }
+    this.deleteAvailability = this.deleteAvailability.bind(this)
+    this.loadData = this.loadData.bind(this)
   }
 
-  addAvailability(event) {
+  addAvailability = (event) => {
     this.setState({events: this.state.events.concat(event) })
   }
 
   async deleteAvailability(rowData) {
     let url = "http://dev.sage.care/api/v1/cp/s/availabilities/"+rowData.id
     var _this = this;
+    var current_events = this.state.events
     var token = await store.get("_token")
     fetch(url, { method: 'DELETE', headers: App.headers(token)}).then(function(res) {
       if(res.status == 200) {
@@ -83,7 +86,7 @@ export default class AvailabilityView extends React.Component {
     this.loadData(0)
   }
 
-  _press() {
+  _press = () => {
     Actions.add_availability_modal({addAvailability: this.addAvailability})
   }
 
@@ -131,7 +134,7 @@ export default class AvailabilityView extends React.Component {
     this.loadData()
   }
 
-  onRefresh() {
+  onRefresh = () => {
     this.loadData(0, true)
   }
 }

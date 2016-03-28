@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import Dimensions from 'Dimensions';
 import { Actions } from 'react-native-router-flux'
 import _ from "underscore"
+var KeyboardSpacer = require('react-native-keyboard-spacer');
 
 import React, {
   TouchableOpacity,
@@ -82,25 +83,25 @@ export default class MedicalSupplyNote extends React.Component {
 
   }
 
-  addMedicalNotes() {
+  addMedicalNotes = () => {
     var notes = this.state.medicalNotes
     notes = notes.concat(1)
     this.setState({medicalNotes: notes})
   }
 
-  addSupplyNotes() {
+  addSupplyNotes = () => {
     var notes = this.state.supplyNotes
     notes = notes.concat(1)
     this.setState({supplyNotes: notes})
   }
 
-  enterSupply(event) {
+  enterSupply = (event) => {
     let supplyValues = this.state.supplyValues
     supplyValues[event.nativeEvent.target] = event.nativeEvent.text
     this.setState({supplyValues: supplyValues})
   }
 
-  enterMedical(event) {
+  enterMedical = (event) => {
     let medicalValues = this.state.medicalValues
     medicalValues[event.nativeEvent.target] = event.nativeEvent.text
     this.setState({medicalValues: medicalValues})
@@ -149,9 +150,11 @@ export default class MedicalSupplyNote extends React.Component {
           <Text style={{fontSize:18}}> {"Add Low-Running Supplies & Food"} </Text>
         </View>
             {supplyInputs}
-
+            <KeyboardSpacer />
             <TouchableOpacity onPress={this.addSupplyNotes} >
-              <View style={{borderWidth:1,borderStyle:"dashed",borderColor:"#979797",padding:10,marginLeft:100,marginRight:15,borderRadius:5,alignItems:"center",backgroundColor:"#FFFFFF",marginBottom:100}}>
+              <View style={{borderWidth:1,borderStyle:"dashed",borderColor:"#979797",
+                          padding:10,marginLeft:100, marginRight:15,borderRadius:5,
+                          alignItems:"center",backgroundColor:"#FFFFFF",marginBottom:100}}>
                 <Text style={{color:"#626262",fontSize:14}}>Add Another Note</Text>
               </View>
             </TouchableOpacity>

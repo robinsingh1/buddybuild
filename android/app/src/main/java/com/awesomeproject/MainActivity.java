@@ -1,4 +1,4 @@
-package com.awesomeproject;
+package com.sage_caregivers;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactPackage;

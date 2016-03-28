@@ -1,16 +1,14 @@
-var App = require("./globals")
-import Dimensions from 'Dimensions';
+import App from "./globals"
 var RNGMap = require('react-native-gmaps');
-var Button = require("react-native-button")
-var React = require('react-native');
-var FluxRouter = require('react-native-router-flux')
-var { Schema, Route, Actions, TabBar, Animations } = FluxRouter
-var { Text, View, } = React;
+import Button from "react-native-button"
+import { Actions } from 'react-native-router-flux'
+import React, { Text, View, } from 'react-native'
+import Dimensions from 'Dimensions';
 
-var MapHeader = React.createClass({
+export class MapHeader extends React.Component {
   goBack () {
     Actions.pop()
-  },
+  }
 
   render() {
     return (
@@ -26,10 +24,10 @@ var MapHeader = React.createClass({
       </View>
     )
   }
-})
+}
 
-var MapView = React.createClass({
-  render: function() {
+export default class MapView extends React.Component {
+  render() {
     var location = this.props.location
     console.log(location)
     var lat = location.lat
@@ -61,9 +59,4 @@ var MapView = React.createClass({
     </View>
     )
   }
-})
-
-module.exports = { 
-  MapView: MapView,
-  MapHeader: MapHeader
 }

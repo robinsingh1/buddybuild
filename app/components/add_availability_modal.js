@@ -4,6 +4,7 @@ import moment from "moment"
 import _ from "underscore"
 import App from "./globals"
 var store = require('react-native-simple-store')
+var mtz = require('moment-timezone');
 
 import React, {
   Alert,
@@ -19,13 +20,19 @@ import { Actions } from 'react-native-router-flux'
 import Dimensions from 'Dimensions';
 
 export class AddAvailabilityHeader extends React.Component {
+  constructor() {
+    super()
+    this.yoPress = this.yoPress.bind(this)
+    this.donePress = this.donePress.bind(this)
+  }
+
   propTypes = {
     currentScreen: React.PropTypes.string.isRequired,
     startTime: React.PropTypes.string.isRequired,
     endTime: React.PropTypes.string.isRequired,
     endDate: React.PropTypes.string.isRequired,
-    recurring: React.PropTypes.boolean.isRequired,
-    recurringPeriod: React.PropTypes.Object.isRequired,
+    recurring: React.PropTypes.bool.isRequired,
+    recurringPeriod: React.PropTypes.object.isRequired,
     startDate: React.PropTypes.string.isRequired
   }
 
@@ -83,23 +90,34 @@ export class AddAvailabilityHeader extends React.Component {
       this.warningMessage("Your recurring period's start date cannot be the same as your end date.")
     } else {
       var startTime = this.props.startTime.split(" ")[0].split(":")
-      var hour = parseInt(startTime[0]); var min = parseInt(startTime[1]);
+      console.log(startTime)
+      var hour = parseInt(startTime[0]); 
+      var min = parseInt(startTime[1]);
       hour = (this.props.startTime.indexOf("pm") == -1) ? hour : hour + 12
-      hour = (hour != 0) ? hour + 12 : hour
+      console.log(hour)
+      hour = (hour == 0) ? hour + 12 : hour
       
+      console.log(hour)
       startTime = moment(this.props.startDate).hour(hour).minute(min).format()
+      console.log(startTime)
+      startTime = mtz(startTime).tz("America/Toronto").tz("UTC").format()
+      console.log(startTime)
 
       var endTime = this.props.endTime.split(" ")[0].split(":")
       hour = parseInt(endTime[0]); 
       min = parseInt(endTime[1]);
       hour = (this.props.endTime.indexOf("pm") == -1) ? hour : hour + 12
-      hour = (hour != 0) ? hour + 12 : hour
+      hour = (hour == 0) ? hour + 12 : hour
       endTime = moment(this.props.endDate).hour(hour).minute(min).format()
 
+      console.log(startTime)
+      console.log(endTime)
       let diff = moment(startTime).diff(moment(endTime))
       let duration = moment.duration(diff)
       duration = duration.hours() + duration.minutes() / 60
       duration = Math.abs(duration)
+      console.log("duration")
+      console.log(duration)
 
       var event = {   
         "duration": duration,
@@ -143,8 +161,8 @@ export default class AddAvailabilityModal extends React.Component {
     addAvailability: React.PropTypes.string.isRequired
   }
 
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     this.state = {
       recurring: false,
       setRecurringPeriod: false,
@@ -155,27 +173,31 @@ export default class AddAvailabilityModal extends React.Component {
       endTime: undefined,
       addAvailability: this.props.addAvailability
     }
+
+    this.toggleRecurringPeriod = this.toggleRecurringPeriod.bind(this)
+    this.toggleRecurring = this.toggleRecurring.bind(this)
+    this.setRecurringPeriod = this.setRecurringPeriod.bind(this)
   }
 
   validateRecurringPeriod() {
   }
 
-  toggleView() {
+  toggleView = () => {
     this.setState({showView: !this.state.showView })
   }
 
-  toggleRecurring() {
+  toggleRecurring = () => {
     this.setState({recurring: !this.state.recurring, setRecurringPeriod: true})
     if(!this.state.recurring) {
       this.setState({setRecurringPeriod: false, recurringPeriod: {}}) 
     }
   }
 
-  toggleRecurringPeriod() {
+  toggleRecurringPeriod = () => {
     this.setState({setRecurringPeriod: !this.state.setRecurringPeriod})
   }
 
-  startTime() {
+  startTime = () => {
     var _this = this;
     NativeModules.DateAndroid.showTimepicker(function(){},function(hour, minute) {
       minute = (minute < 10) ? "0"+minute : minute
@@ -187,7 +209,7 @@ export default class AddAvailabilityModal extends React.Component {
     });
   }
   
-  endTime() {
+  endTime = () => {
     var _this = this;
     NativeModules.DateAndroid.showTimepicker(function() {}, function(hour, minute) {
       minute = (minute < 10) ? "0"+minute : minute
@@ -199,7 +221,7 @@ export default class AddAvailabilityModal extends React.Component {
     });
   }
 
-  datepicker() {
+  datepicker = () => {
     var _this = this;
     NativeModules.DateAndroid.showDatepicker(function() {}, function(y, m, d) {
       var date = moment().year(y).month(m).date(d).valueOf()
@@ -215,17 +237,18 @@ export default class AddAvailabilityModal extends React.Component {
   render() {
     var height = Dimensions.get('window').height
 
+    var recurringPeriodView = <View />
     if (this.state.setRecurringPeriod) {
-      let recurringPeriodView = <SetRecurringPeriodView 
+      recurringPeriodView = <SetRecurringPeriodView 
         toggleRecurringPeriod={this.toggleRecurringPeriod} 
         toggleRecurring={this.toggleRecurring} 
         setRecurringPeriod={this.setRecurringPeriod} 
         currentPeriod={this.state.recurringPeriod} />
     } else {
       if (!_.isEqual({}, this.state.recurringPeriod)) {
-        let recurringPeriodView = <RecurringPeriodView recurringPeriod={this.state.recurringPeriod} />
+        recurringPeriodView = <RecurringPeriodView recurringPeriod={this.state.recurringPeriod} />
       } else {
-        let recurringPeriodView = <View />
+        recurringPeriodView = <View />
       }
     }
     return (
@@ -290,21 +313,21 @@ export default class AddAvailabilityModal extends React.Component {
 class SetRecurringPeriodView extends React.Component {
   propTypes = {
     currentPeriod: React.PropTypes.string.isRequired,
-    toggleRecurring: React.PropTypes.function.isRequired,
-    setRecurringPeriod: React.PropTypes.boolean.isRequired,
-    toggleRecurringPeriod: React.PropTypes.function.isRequired
+    toggleRecurring: React.PropTypes.func.isRequired,
+    setRecurringPeriod: React.PropTypes.bool.isRequired,
+    toggleRecurringPeriod: React.PropTypes.func.isRequired
   }
 
   constructor(props) {
     super(props)
     let { currentPeriod } = this.props
-    return {
+    this.state = {
       startDate: (currentPeriod.startDate) ? currentPeriod.startDate : 0,
       endDate: (currentPeriod.endDate) ? currentPeriod.endDate : 0
     }
   }
 
-  chooseRecurringStartDate() {
+  chooseRecurringStartDate = () => {
     var _this = this;
     NativeModules.DateAndroid.showDatepicker(function(){}, function(year,month,day){
       var date = moment().year(year).month(month).date(day).valueOf()
@@ -317,7 +340,7 @@ class SetRecurringPeriodView extends React.Component {
     });
   }
 
-  chooseRecurringEndDate() {
+  chooseRecurringEndDate = () => {
     var _this = this;
     NativeModules.DateAndroid.showDatepicker(function(){}, function(year,month,day){
       var date = moment().year(year).month(month).date(day).valueOf()
@@ -336,7 +359,6 @@ class SetRecurringPeriodView extends React.Component {
 
     return (
       <View style={{backgroundColor:"#FFF6E2",borderWidth:1,borderColor:"#FFCE66",height:170,width:300,marginTop:10,borderRadius:3}}>
-
         <View style={{alignItems:"center",flexDirection:"row",justifyContent:"space-between",width:200,marginLeft:40,marginTop:20}}>
           <Text>Start Date</Text>
           <Text>End Date</Text>
@@ -371,15 +393,15 @@ class SetRecurringPeriodView extends React.Component {
     )
   }
 
-  toggleRecurring () {
+  toggleRecurring = () => {
     this.props.toggleRecurring()
   }
 
-  toggleRecurringPeriod() {
+  toggleRecurringPeriod = () => {
     this.props.toggleRecurringPeriod()
   }
 
-  setRecurringPeriod() {
+  setRecurringPeriod = () => {
     this.props.setRecurringPeriod({
       startDate: this.state.startDate, 
       endDate: this.state.endDate
@@ -420,6 +442,7 @@ class RecurringPeriodView extends React.Component {
   render() {
     var startDate = moment(this.props.recurringPeriod.startDate).format("MMM DD")
     var endDate = moment(this.props.recurringPeriod.endDate).format("MMM DD")
+    console.log("render")
     return (
       <View style={{backgroundColor:"#FFF6E2",borderWidth:1,borderColor:"#FFCE66",
                     height:70,width:300,marginTop:10,borderRadius:3}}>

@@ -23,7 +23,7 @@ var ds = new ListView.DataSource({
 })
 
 export default class UpcomingListView extends React.Component {
-  propTypes = {
+  static propTypes = {
     page: React.PropTypes.string.isRequired
   }
 
@@ -36,11 +36,14 @@ export default class UpcomingListView extends React.Component {
       dataSource: ds.cloneWithRowsAndSections({}),
       loading: true
     }
+    this._onPress = this._onPress.bind(this)
+    this.renderRow = this.renderRow.bind(this)
+    this.loadEvents = this.loadEvents.bind(this)
   }
 
   _onPress(rowData) {
-    let name = (rowData.client.gender == "M") ? "Mr. " : "Ms. "
-    name = name + rowData.client.lastName
+    let name = (rowData.Client.gender == "M") ? "Mr. " : "Ms. "
+    name = name + rowData.Client.lastName
     let data = {completed: rowData.checkoutTime, name: name}
     data = _.extend(rowData, data)
     Actions.visit_summary({lol:"lmao", data: rowData, name: name, completed: rowData.checkOutTime})
@@ -52,7 +55,7 @@ export default class UpcomingListView extends React.Component {
     return (
       <TouchableHighlight 
         style={styles.row} 
-        onPress={() => this._onPress(rowData)}
+        onPress={() => { this._onPress(rowData) }}
         underlayColor='#c8c7cc' >
         <View style={{flexDirection:'row'}}>
           <View>
@@ -108,9 +111,12 @@ export default class UpcomingListView extends React.Component {
     var token = await store.get("_token")
     var url = App.event_url+`page=${page}&startDate=${moment().format('ddd MM-DD-YYYY HH:mm:ssZZ')}`
     //console.log(url)
+    //console.log(App.headers(token))
     fetch(url, {headers: App.headers(token)}).then(function(res) {
+      //console.log(res)
       if(res.status != 200) {
-        _this.setState({error: true})
+        //console.log("error")
+        _this.setState({error: true,loading:false})
       }
       if(res.status == 200) {
         let events = JSON.parse(res._bodyText).events
@@ -131,16 +137,23 @@ export default class UpcomingListView extends React.Component {
     })
   }
 
-  componentWillReceiveProps (a, b) {
-    if(a.lastLoaded != b.lastLoaded) {
-      if(this.props.page == "upcoming") {
+  //componentWillReceiveProps (a, b) {
+  shouldComponentUpdate (a, b) {
+    //if(a.lastLoaded != b.lastLoaded) {
+    //if(this.props.page == "upcoming") {
+    console.log("should component update?")
+    return a.page != b.page
+    /*
+      if(a.page != b.page) {
         this.setState({loading:true})
         this.loadEvents(0, true)
       }
-    }
+    */
+      //}
   }
 
-  componentWillMount() {
+  //componentWillMount() {
+  componentDidMount() {
     this.loadEvents().done()
   }
 
@@ -152,22 +165,20 @@ export default class UpcomingListView extends React.Component {
     )
   }
 
-  onRefresh() {
-    //console.log("loading")
+  onRefresh = () => {
     this.setState({loading: true})
     this.loadEvents(0, true)
   }
 
   render() {
-    console.log("render")
     var height = Dimensions.get('window').height
 
-    let loadingMore = <View />
+    var loadingMore = <View />
     if(this.state.empty) {
       if(!this.state.loadingMore) {
-        let loadingMore = <Button style={{color:"#bbb",marginTop:10,marginBottom:10}} onPress={this.loadMore}>Load More</Button> 
+        loadingMore = <Button style={{color:"#bbb",marginTop:20,marginBottom:30}} onPress={this.loadMore}>Load More</Button> 
       } else {
-        let loadingMore = <GiftedSpinner />
+        loadingMore = <GiftedSpinner style={{marginTop:20,marginBottom:30,height:20}}/>
       }
     }
     return (
@@ -188,7 +199,7 @@ export default class UpcomingListView extends React.Component {
     )
   }
 
-  loadMore() {
+  loadMore = () => {
     this.setState({loadingMore: true})
     this.loadEvents()
   }

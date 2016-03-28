@@ -23,7 +23,7 @@ export default class Login extends React.Component {
     }
   }
 
-  login() {
+  login = () => {
     var _this = this;
     let headers = { 'Accept': 'application/json', 'Content-Type': 'application/json' }
     let body =  JSON.stringify({
@@ -50,7 +50,7 @@ export default class Login extends React.Component {
     })
   }
 
-  _press() {
+  _press = () => {
     this.login()
   }
 

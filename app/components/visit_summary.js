@@ -51,13 +51,13 @@ export class VisitHeader extends React.Component {
 }
 
 class TimingComponent extends React.Component {
-  propTypes = {
-    checkinTime: React.PropTypes.String.isRequired,
-    data: React.PropTypes.Object.isRequired
+  static propTypes = {
+    checkinTime: React.PropTypes.string.isRequired,
+    data: React.PropTypes.object.isRequired
   }
 
   render() {
-    console.log(this.props)
+    //console.log(this.props)
     return (
       <View style={{borderColor:"#ddd",borderWidth:1,flexDirection:'row',
         elevation:1, backgroundColor:"white",width:335,borderRadius:5,
@@ -135,7 +135,7 @@ class CompletedView extends React.Component {
 }
 
 class Task extends React.Component {
-  propTypes = {
+  static propTypes = {
     category: React.PropTypes.string.isRequired,
     details: React.PropTypes.string.isRequired
   }
@@ -176,7 +176,7 @@ class Task extends React.Component {
 }
 
 class MapButton extends React.Component {
-  propTypes = {
+  static propTypes = {
     address: React.PropTypes.string.isRequired
   }
 
@@ -185,6 +185,7 @@ class MapButton extends React.Component {
     this.state = {
       location: {}
     }
+    this.imagePress = this.imagePress.bind(this)
   }
 
   imagePress() {
@@ -225,10 +226,10 @@ class MapButton extends React.Component {
 }
 
 export default class VisitSummary extends React.Component {
-  propTypes = {
-    checkInTime: React.PropTypes.String.isRequired,
-    completed: React.PropTypes.boolean.isRequired,
-    data: React.PropTypes.Object.isRequired
+  static propTypes = {
+    checkInTime: React.PropTypes.string.isRequired,
+    completed: React.PropTypes.bool.isRequired,
+    data: React.PropTypes.object.isRequired
   }
 
   constructor(props) {
@@ -241,7 +242,6 @@ export default class VisitSummary extends React.Component {
       geo: {}
     }
     this._press = this._press.bind(this)
-    this.yoPress = this.yoPress.bind(this)
   }
 
   imagePress() {
@@ -253,6 +253,7 @@ export default class VisitSummary extends React.Component {
   }
 
   async _press() {
+    console.log("press")
     // _press() {
     if(_.isEqual(this.state.geo, {})) {
       Alert.alert( 'Warning!', 'There was an error - please try again.',
@@ -265,6 +266,7 @@ export default class VisitSummary extends React.Component {
     if(this.state.checkedIn) {
       let _this = this;
       if(this.props.data["Tasks"].length) {
+        console.log("notes")
         Actions.notes_screen({currentScreen: 0, 
                               _id: _this.props.data.id,
                               checkOutTime: moment().format(),
@@ -294,7 +296,7 @@ export default class VisitSummary extends React.Component {
           _this.setState({checkedIn:  time})
           _this.props.updateCheckedinState(_this.props.data.id, time)
         } else {
-          Alert.alert( 'Warning!', 'There was an error - please try again.',
+          Alert.alert( 'Warning!', " Warning: We couldn't check you in/out right now due to an error. Please call +1 877-960-0235. ",
           [{text: 'Cancel', onPress:() => {}}, {text:'Yes', onPress: () => { }}]) }
       })
     }
@@ -317,11 +319,6 @@ export default class VisitSummary extends React.Component {
     this.setState({interval: interval})
   }
 
-  yoPress() {
-    //console.log(this)
-    //console.log("yo")
-    this._press()//.done()
-  }
 
   render() {
     let data = (this.props.data) ? this.props.data : {}
@@ -339,7 +336,7 @@ export default class VisitSummary extends React.Component {
        <View style={{backgroundColor:"#F6F6FB",flex:1,alignItems:"center",paddingTop:0}}>
         <View style={{backgroundColor:"#F9F9F9",marginTop:0,height:70,width:400,borderBottomWidth:1,borderBottomColor:"#D2D2D2"}} >
           { (this.props.completed) ? <CompletedView /> : 
-            <TouchableOpacity onPress={this.yoPress} >
+            <TouchableOpacity onPress={this._press} >
                   <View style={{backgroundColor:btnColor,marginLeft:35,padding:5,
                     borderRadius:3,marginTop:10,height:45,width:335,
                   alignItems:"center",paddingTop:10}}> 
