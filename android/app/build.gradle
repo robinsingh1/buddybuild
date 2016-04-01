@@ -81,13 +81,21 @@ android {
     buildToolsVersion "23.0.1"
 
     defaultConfig {
-        applicationId "com.awesomeproject"
+        applicationId "com.sage_caregivers"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 1
+        versionCode 4
         versionName "1.0"
         ndk {
             abiFilters "armeabi-v7a", "x86"
+        }
+    }
+    signingConfigs {
+        release {
+            storeFile file('/Users/robin/Projects/sage/sage_caregivers_app/android/app/my-release-key.keystore')
+            storePassword "sagecare"
+            keyAlias "my-key-alias"
+            keyPassword "sagecare"
         }
     }
     splits {
@@ -102,6 +110,7 @@ android {
         release {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
         }
     }
     // applicationVariants are e.g. debug, release

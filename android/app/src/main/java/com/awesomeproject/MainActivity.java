@@ -1,4 +1,4 @@
-package com.awesomeproject;
+package com.sage_caregivers;
 
 import com.facebook.react.ReactActivity;
 import com.smixx.reactnativeicons.ReactNativeIcons;

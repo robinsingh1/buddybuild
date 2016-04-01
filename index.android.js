@@ -196,7 +196,7 @@ var AwesomeProject = React.createClass({
 
           <Route name="launch" schema="default" component={Main} initial={true} title="SAGE" header={Header} />
           <Route name="map_detail" schema="default" component={MapView} initial={false} title="SAGE" header={MapHeader} />
-          <Route name="splash" schema="default" component={SplashScreen} initial={false} title="SAGE" />
+          <Route name="splash" schema="default" component={SplashScreen} initial={true} title="SAGE" />
           <Route name="notes_screen" component={TaskScreen} initial={false} />
           <Route name="next_notes_screen" component={TaskScreen}  />
           <Route name="medical_supplies" component={MedicalSupplyNote} initial={false}/>
