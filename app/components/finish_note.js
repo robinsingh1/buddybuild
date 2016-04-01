@@ -56,12 +56,16 @@ class TaskHeader extends React.Component {
 
 
 export default class FinishNote extends React.Component {
+  constructor(props) {
+    super(props)
+    this.onPress = this.onPress.bind(this)
+  }
   propTypes = {
-    checkOutGeolocation: React.PropTypes.String.isRequired,
-    checkOutTime: React.PropTypes.String.isRequired,
-    overallNote: React.PropTypes.String.isRequired,
-    _id: React.PropTypes.String.isRequired,
-    tasks: React.PropTypes.Array.isRequired
+    checkOutGeolocation: React.PropTypes.string.isRequired,
+    checkOutTime: React.PropTypes.string.isRequired,
+    overallNote: React.PropTypes.string.isRequired,
+    _id: React.PropTypes.string.isRequired,
+    tasks: React.PropTypes.array.isRequired
   }
 
   async onPress() {
@@ -73,23 +77,26 @@ export default class FinishNote extends React.Component {
         },
         "Tasks": this.props.tasks
     }
+    console.log(body)
     let body = JSON.stringify(body)
     var token = await store.get("_token")
-    var url = "http://dev.sage.care/api/v1/cp/s/events/"+this.props._id+"/checkout"
-    fetch(url, { method: 'PUT', headers: App.headers(token), body: body})
-    .then(function(res) {
-      if(res.status == 200) {
-        Actions.launch({type: "replace"})
-      } else {
-        Alert.alert( 'Warning!', 'There was an error - please try again.',
-        [ {text: 'Cancel', onPress: () => {  }, style: 'cancel'},
-          {text: 'Yes', onPress: () => { }}
-        ])
-      }
-    })
+    var url = `http://dev.sage.care/api/v1/cp/s/events/${this.props._id}/checkout`
+    console.log(url)
+    var res = await fetch(url, { method: 'PUT', headers: App.headers(token), body: body})
+    var data = await res.json()
+    console.log(data)
+    if(res.status == 200) {
+      Actions.launch({type: "replace"})
+    } else {
+      Alert.alert( 'Warning!', 'There was an error - please try again.',
+      [ {text: 'Cancel', onPress: () => {  }, style: 'cancel'},
+        {text: 'Yes', onPress: () => { }}
+      ])
+    }
   }
 
   render() {
+    console.log(this.props)
     var btnColor = "#40BF93"
     var btnText = "BACK TO VISITS"
     //console.log(this.props)

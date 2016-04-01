@@ -11,7 +11,6 @@ export default class SplashScreen extends React.Component {
 
   componentDidMount () {
     store.get("_token").then(function(token) {
-      console.log(token)
       if(token) {
         console.log("launch")
         Actions.launch()

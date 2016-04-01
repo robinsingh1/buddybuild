@@ -117,10 +117,9 @@ export default class AvailabilityListView extends React.Component {
   renderRow(rowData) {
     var year = moment(rowData.startTime).year()
     var day = moment(rowData.startTime).year(year).format("ddd, MMM D")
-    return ( <TouchableHighlight 
+    return ( <View 
         style={styles.row} 
-        underlayColor='#fff'
-        onPress={() => this.deleteRow(rowData)} >  
+         >  
         <View style={{flexDirection:'column',height:100}}>
           <View style={{justifyContent:"space-between",flexDirection:'row',
                         padding:12}}>
@@ -143,11 +142,17 @@ export default class AvailabilityListView extends React.Component {
                   </Text>
               </View>
             </View>
-            <Icon name="times" size={13} color="#ccc" 
-                style={{marginRight:5,marginTop:25}}/>
+            <TouchableHighlight
+              underlayColor='#fff'
+              onPress={() => this.deleteRow(rowData)}
+              style={{padding:20,position:"absolute",top:0,right:0}}
+              >
+              <Icon name="times" size={13} color="#ccc" 
+                  style={{marginLeft:35,marginTop:15}}/>
+            </TouchableHighlight>
           </View>
         </View>
-      </TouchableHighlight>
+      </View>
     )
   }
 }

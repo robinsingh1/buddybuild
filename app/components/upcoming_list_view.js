@@ -13,6 +13,7 @@ import React, {
   ListView,
   ScrollView,
   TouchableHighlight,
+  TouchableOpacity,
   PullToRefreshViewAndroid,
   View
 } from 'react-native'
@@ -34,7 +35,8 @@ export default class UpcomingListView extends React.Component {
       page:0,
       lastLoaded: 0,
       dataSource: ds.cloneWithRowsAndSections({}),
-      loading: true
+      loading: true,
+      empty:true,
     }
     this._onPress = this._onPress.bind(this)
     this.renderRow = this.renderRow.bind(this)
@@ -110,31 +112,27 @@ export default class UpcomingListView extends React.Component {
     var _this = this;
     var token = await store.get("_token")
     var url = App.event_url+`page=${page}&startDate=${moment().format('ddd MM-DD-YYYY HH:mm:ssZZ')}`
-    //console.log(url)
-    //console.log(App.headers(token))
-    fetch(url, {headers: App.headers(token)}).then(function(res) {
-      //console.log(res)
-      if(res.status != 200) {
-        //console.log("error")
-        _this.setState({error: true,loading:false})
-      }
-      if(res.status == 200) {
-        let events = JSON.parse(res._bodyText).events
-        let empty = events.length
-        events = (replace) ? events : _this.state.events.concat(events) 
-        events = _.sortBy(events, function(e) { return moment(e.startTime) })
+    var res = await fetch(url, {headers: App.headers(token)})
+    if(res.status != 200) {
+      _this.setState({error: true,loading:false})
+    }
+    if(res.status == 200) {
+      var res = await res.json();
+      events = res.events
+      let empty = !events.length
+      events = (replace) ? events : _this.state.events.concat(events) 
+      events = _.sortBy(events, function(e) { return moment(e.startTime) })
 
-        let sorted_events = _.groupBy(events, function(event) {
-          return moment(event.startTime).format('dddd MMM Do').toString()
-        })
-        _this.setState({loading: false,
-                        events: events,
-                        loadingMore: false,
-                        empty: empty,
-                        page: _this.state.page + 1,
-                        dataSource: ds.cloneWithRowsAndSections(sorted_events) })
-      }
-    })
+      let sorted_events = _.groupBy(events, function(event) {
+        return moment(event.startTime).format('dddd MMM Do').toString()
+      })
+      _this.setState({loading: false,
+                      events: events,
+                      loadingMore: false,
+                      empty: empty,
+                      page: page + 1,
+                      dataSource: ds.cloneWithRowsAndSections(sorted_events) })
+    }
   }
 
   //componentWillReceiveProps (a, b) {
@@ -160,7 +158,8 @@ export default class UpcomingListView extends React.Component {
   renderSectionHeader (sectionData, sectionID) {
     return (
       <View style={{backgroundColor:"white"}}>
-        <Text style={{fontSize:20,marginLeft:10,marginTop:20,marginBottom:2,color:"#40BF93"}}>{sectionID}</Text>
+        <Text style={{fontSize:20,marginLeft:10,marginTop:20,marginBottom:2,
+          color:"#40BF93"}}>{sectionID}</Text>
       </View>
     )
   }
@@ -173,10 +172,19 @@ export default class UpcomingListView extends React.Component {
   render() {
     var height = Dimensions.get('window').height
 
-    var loadingMore = <View />
     if(this.state.empty) {
+      if(this.state.loading) {
+        var loadingMore = <View />
+      } else {
+        loadingMore = <View style={{backgroundColor:"#bbb",alignSelf:"center",borderRadius:5,padding:15,marginTop:20,marginBottom:30}} onPress={this.loadMore}>
+          <Text style={{color:"white",fontWeight:"bold",fontSize:16}}> No More Events.</Text>
+          </View> 
+      }
+    } else {
       if(!this.state.loadingMore) {
-        loadingMore = <Button style={{color:"#bbb",marginTop:20,marginBottom:30}} onPress={this.loadMore}>Load More</Button> 
+        loadingMore = <TouchableOpacity style={{backgroundColor:"#40BF93",borderRadius:5,padding:15,marginTop:20,alignSelf:"center",marginBottom:30}} onPress={this.loadMore}>
+          <Text style={{color:"white",fontWeight:"bold",fontSize:16}}> Load More </Text>
+        </TouchableOpacity> 
       } else {
         loadingMore = <GiftedSpinner style={{marginTop:20,marginBottom:30,height:20}}/>
       }

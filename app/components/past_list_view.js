@@ -12,6 +12,7 @@ import React, {
   ListView,
   ScrollView,
   TouchableHighlight,
+  TouchableOpacity,
   Text,
   PullToRefreshViewAndroid,
   View
@@ -30,7 +31,8 @@ export default class PastListView extends React.Component {
       page:0,
       dataSource: ds.cloneWithRowsAndSections({}),
       loading: true,
-      isRefreshing: false
+      isRefreshing: false,
+      empty: true
     }
     this._onPress = this._onPress.bind(this)
     this.capitalize = this.capitalize.bind(this)
@@ -156,34 +158,28 @@ export default class PastListView extends React.Component {
     var _this = this;
     var token = await store.get("_token")
     var url = App.event_url+`page=${this.state.page}&endDate=${moment().format('ddd MM-DD-YYYY HH:mm:ssZZ')}`
-    //console.log("past")
-    console.log(url)
-    console.log(App.headers(token))
-    fetch(url, {headers: App.headers(token)}).then(function(res) {
-      console.log(res)
-      if(res.status != 200)
-        _this.setState({error: true})
+    var res = await fetch(url, {headers: App.headers(token)})
+    if(res.status != 200)
+      _this.setState({error: true})
 
-      if(res.status == 200) {
-        events = _this.state.events.concat(JSON.parse(res._bodyText).events)
-        let empty = events.length
-        events = (replace) ? events : _this.state.events.concat(events) 
-        events = _.sortBy(events, function(e) { return moment(e.startTime) })
-        var events = events.reverse()
-        sorted_events = _.groupBy(events, function(event) {
-          return moment(event.startTime).format('dddd MMM Do').toString()
-        })
-        console.log(sorted_events)
-        console.log(_this.state)
-        _this.setState({loading: false, 
-                        events: events,
-                        loadingMore: false,
-                        empty: empty,
-                        page: _this.state.page + 1,
-                        dataSource: ds.cloneWithRowsAndSections(sorted_events) 
-        })
-      }
-    })
+    if(res.status == 200) {
+      var res = await res.json();
+      events = res.events
+      let empty = !events.length
+      events = (replace) ? events : _this.state.events.concat(events) 
+      events = _.sortBy(events, function(e) { return moment(e.startTime) })
+      var events = events.reverse()
+      sorted_events = _.groupBy(events, function(event) {
+        return moment(event.startTime).format('dddd MMM Do').toString()
+      })
+      _this.setState({loading: false, 
+                      events: events,
+                      loadingMore: false,
+                      empty: empty,
+                      page: page + 1,
+                      dataSource: ds.cloneWithRowsAndSections(sorted_events) 
+      })
+    }
   }
 
   //componentWillReceiveProps(a, b) {
@@ -221,10 +217,19 @@ export default class PastListView extends React.Component {
   render() {
     var height = Dimensions.get('window').height
 
-    var loadingMore = <View />
     if(this.state.empty) {
+      if(this.state.loading) {
+        var loadingMore = <View />
+      } else {
+        loadingMore = <View style={{backgroundColor:"#bbb",alignSelf:"center",borderRadius:5,padding:15,marginTop:20,marginBottom:30}} onPress={this.loadMore}>
+          <Text style={{color:"white",fontWeight:"bold",fontSize:16}}> No More Events.</Text>
+          </View> 
+      }
+    } else {
       if(!this.state.loadingMore) {
-        loadingMore = <Button style={{color:"#bbb",marginTop:20,marginBottom:30}} onPress={this.loadMore}>Load More</Button> 
+        loadingMore = <TouchableOpacity style={{backgroundColor:"#40BF93",borderRadius:5,padding:15,marginTop:20,alignSelf:"center",marginBottom:30}} onPress={this.loadMore}>
+          <Text style={{color:"white",fontWeight:"bold",fontSize:16}}> Load More </Text>
+        </TouchableOpacity> 
       } else {
         loadingMore = <GiftedSpinner style={{marginTop:20,marginBottom:30,height:20}}/>
       }

@@ -256,7 +256,7 @@ export default class VisitSummary extends React.Component {
     console.log("press")
     // _press() {
     if(_.isEqual(this.state.geo, {})) {
-      Alert.alert( 'Warning!', 'There was an error - please try again.',
+      Alert.alert( 'Warning!', "We couldn't check you in/out right now due to an error. Please call +1 877-960-0235.",
         [{text: 'Cancel', onPress: () => { }}, {text: 'Yes', onPress: () => { }}])
       return false
     }
@@ -336,7 +336,7 @@ export default class VisitSummary extends React.Component {
        <View style={{backgroundColor:"#F6F6FB",flex:1,alignItems:"center",paddingTop:0}}>
         <View style={{backgroundColor:"#F9F9F9",marginTop:0,height:70,width:400,borderBottomWidth:1,borderBottomColor:"#D2D2D2"}} >
           { (this.props.completed) ? <CompletedView /> : 
-            <TouchableOpacity onPress={this._press} >
+            <TouchableOpacity onPress={() => { this._press().done() }} >
                   <View style={{backgroundColor:btnColor,marginLeft:35,padding:5,
                     borderRadius:3,marginTop:10,height:45,width:335,
                   alignItems:"center",paddingTop:10}}> 

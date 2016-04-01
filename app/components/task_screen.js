@@ -13,19 +13,19 @@ import React, {
 } from 'react-native'
 
 export class TaskHeader extends React.Component {
-  propTypes = {
-    tasks: React.propTypes.String.isRequired,
-    name: React.propTypes.String.isRequired,
-    text: React.propTypes.String.isRequired,
-    finish_note: React.propTypes.boolean.isRequired,
-    currentScreen: React.propTypes.String.isRequired
+  static propTypes = {
+    tasks: React.PropTypes.string.isRequired,
+    name: React.PropTypes.string.isRequired,
+    text: React.PropTypes.string.isRequired,
+    finish_note: React.PropTypes.bool.isRequired,
+    currentScreen: React.PropTypes.string.isRequired
   }
 
   backPress() {
     Actions.pop()
   }
 
-  onPress() {
+  onPress = () => {
     let tasks = this.props.tasks
     this.props.tasks[this.props.currentScreen].notes = this.props.text 
     this.props.tasks[this.props.currentScreen].completed = true
@@ -75,13 +75,13 @@ export class TaskHeader extends React.Component {
 }
 
 export default class TaskScreen extends React.Component {
-  propTypes = {
-    tasks: React.propTypes.string.isRequired,
-    name: React.propTypes.string.isRequired,
-    text: React.propTypes.string.isRequired,
-    finish_note: React.propTypes.boolean.isRequired,
-    currentScreen: React.propTypes.string.isRequired,
-    screen: React.propTypes.string.isRequired
+  static propTypes = {
+    tasks: React.PropTypes.string.isRequired,
+    name: React.PropTypes.string.isRequired,
+    text: React.PropTypes.string.isRequired,
+    finish_note: React.PropTypes.bool.isRequired,
+    currentScreen: React.PropTypes.string.isRequired,
+    screen: React.PropTypes.string.isRequired
   }
 
   constructor(props) {
@@ -91,7 +91,7 @@ export default class TaskScreen extends React.Component {
     }
   }
 
-  imagePress() {
+  imagePress = () => {
     var _finished = !this.state.finished
     this.setState({finished: _finished})
   }
@@ -104,6 +104,7 @@ export default class TaskScreen extends React.Component {
   }
 
   render() {
+    console.log(this.props)
     let height = Dimensions.get('window').height
     let icons = {
       'entry':  <Image style={{position:"absolute",left:55,top:20}} source={require("./img/icon-entry@2x.png")} />,

@@ -29,7 +29,8 @@ export default class AvailabilityView extends React.Component {
       events: [],
       setRecurringPeriod: true,
       page: 0, 
-      empty: false,
+      empty: true,
+      loading:true,
       loadingMore: false
     }
     this.deleteAvailability = this.deleteAvailability.bind(this)
@@ -64,26 +65,29 @@ export default class AvailabilityView extends React.Component {
     var url = App.availability_url+`page=${page}&startDate=${moment().format('ddd MM-DD-YYYY HH:mm:ssZZ')}`
     var _this = this;
     var token = await store.get("_token")
-    fetch(url, { method: 'GET', headers: App.headers(token)}).then(function(res) {
-      if(res.status == 200) {
-        var events = JSON.parse(res._bodyText).availabilities
-        let empty = events.length
-        if(!replace)
-          events = _this.state.events.concat(events)
+    var res = await fetch(url, { method: 'GET', headers: App.headers(token)})
+    if(res.status == 200) {
+      var res = await res.json()
+      console.log('availability')
+      console.log(res)
+      var events = res.availabilities
+      console.log(events)
+      let empty = !events.length
+      if(!replace)
+        events = _this.state.events.concat(events)
 
-        _this.setState({events: events, 
-                        loading: false, 
-                        page: _this.state.page + 1, 
-                        loadingMore: false,
-                        empty: empty })
-      } else {
-        _this.setState({error: true})
-      }
-    })
+      _this.setState({events: events, 
+                      loading: false, 
+                      page: _this.state.page + 1, 
+                      loadingMore: false,
+                      empty: empty })
+    } else {
+      _this.setState({error: true})
+    }
   }
 
-  componentWillMount() {
-    this.loadData(0)
+  componentDidMount() {
+    this.loadData().done()
   }
 
   _press = () => {
@@ -95,12 +99,21 @@ export default class AvailabilityView extends React.Component {
     var btnText = "Add New Availability";
     var height = Dimensions.get('window').height
 
-    let loadingMore = <View />
     if(this.state.empty) {
-      if(!this.state.loadingMore) {
-        let loadingMore = <Button style={{color:"#bbb",marginTop:10,marginBottom:10}} onPress={this.loadMore}>Load More</Button> 
+      if(this.state.loading) {
+        var loadingMore = <View />
       } else {
-        let loadingMore = <GiftedSpinner />
+        loadingMore = <View style={{backgroundColor:"#bbb",alignSelf:"center",borderRadius:5,padding:15,marginTop:20,marginBottom:30}} onPress={this.loadMore}>
+          <Text style={{color:"white",fontWeight:"bold",fontSize:16}}> No More Availabilities.</Text>
+          </View> 
+      }
+    } else {
+      if(!this.state.loadingMore) {
+        loadingMore = <TouchableOpacity style={{backgroundColor:"#40BF93",borderRadius:5,padding:15,marginTop:20,alignSelf:"center",marginBottom:30}} onPress={this.loadMore}>
+          <Text style={{color:"white",fontWeight:"bold",fontSize:16}}> Load More </Text>
+        </TouchableOpacity> 
+      } else {
+        loadingMore = <GiftedSpinner style={{marginTop:20,marginBottom:30,height:20}}/>
       }
     }
     return (
@@ -116,7 +129,7 @@ export default class AvailabilityView extends React.Component {
         onRefresh={this.onRefresh}
         enabled={true}
         style={{backgroundColor:"white"}}>
-        <ScrollView style={{height:height-210}}>
+        <ScrollView style={{height:height-220}}>
           <AvailabilityListView 
               loadData={this.loadData}
               paginate={this.paginate}
@@ -129,12 +142,12 @@ export default class AvailabilityView extends React.Component {
     )
   }
 
-  loadMore() {
+  loadMore = () => {
     this.setState({loadingMore: true})
     this.loadData()
   }
 
   onRefresh = () => {
-    this.loadData(0, true)
+    this.loadData(0, true).done()
   }
 }

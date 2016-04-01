@@ -27,7 +27,7 @@ class TaskHeader extends React.Component {
     Actions.pop()
   }
 
-  onPress() {
+  onPress = () => {
     dismissKeyboard()
     Actions.overall_notes(this.props)
   }
@@ -69,8 +69,8 @@ class TaskHeader extends React.Component {
 }
 
 export default class MedicalSupplyNote extends React.Component {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     this.state = {
       medicalNotes: [1],
       supplyNotes: [1],
@@ -109,6 +109,7 @@ export default class MedicalSupplyNote extends React.Component {
 
   render() {
     var height = Dimensions.get('window').height
+    console.log(this.props)
 
     var _this = this;
     var inputs = _.map(_.range(this.state.medicalNotes.length), function(a, b) {

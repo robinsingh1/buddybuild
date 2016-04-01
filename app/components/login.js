@@ -1,4 +1,5 @@
 'use strict';
+import GiftedSpinner from 'react-native-gifted-spinner'
 
 import App from "./globals"
 var store = require('react-native-simple-store');
@@ -19,7 +20,8 @@ export default class Login extends React.Component {
     this.state = {
       text: "",
       textt: "",
-      loginError:false
+      loginError:false,
+      loading:false
     }
   }
 
@@ -35,22 +37,23 @@ export default class Login extends React.Component {
     fetch(App.auth_url, { method: 'POST', headers: headers, body: body })
     .then(function(res) {
       if(res.status != 200) {
-        _this.setState({loginError: true, loginMessage: ""})
+        _this.setState({loginError: true, loginMessage: "",loading:false})
       }
 
       if(res.status == 200) {
         var _token = JSON.parse(res._bodyText).token
-        _this.setState({token: _token})
+        _this.setState({token: _token,loading:false})
         store.save("_token", _token).then(function(i) {
           Actions.launch()
         })
       }
     }).catch((error) => {
-      _this.setState({loginError: true, loginMessage: ""})
+      _this.setState({loginError: true, loginMessage: "",loading:false})
     })
   }
 
   _press = () => {
+    this.setState({loading:true})
     this.login()
   }
 
@@ -63,14 +66,16 @@ export default class Login extends React.Component {
           <View style={{alignItems:"center"}}>
           <Image source={require("./img/sage-logo-white@2x.png")} style={{height:40,marginTop:100,width:130}}></Image>
         <Text style={{fontSize:17,color:"white",paddingTop:0,marginTop:0}}>Care Pro App</Text>
-      {(!this.state.loginError) ? <Text style={{marginTop:30}}>{""}</Text> : <View style={{borderRadius:5,backgroundColor:"#37a67f",marginTop:40,padding:10,paddingTop:15}}><Text style={{color:"#fff",padding:5,fontSize:14,alignItems:"center"}}>There was an error. Incorrect password and email combination</Text></View>}
+      {(!this.state.loginError) ? <Text style={{marginTop:30}}>{""}</Text> : <View style={{marginLeft:33,marginRight:33,borderRadius:5,backgroundColor:"#37a67f",marginTop:40,padding:10,paddingTop:15}}><Text style={{color:"#fff",padding:5,fontSize:14,alignItems:"center"}}>There was an error. Incorrect password and email combination</Text></View>}
+      {(this.state.loading) ? <GiftedSpinner color={"white"} style={{height:12}} /> : <View /> }
 
-      <View style={{marginTop:40,paddingLeft:33,paddingRight:33,borderRadius:5}}>
+
+      <View style={{marginTop:40,marginLeft:33,marginRight:33,borderRadius:5,padding:5, backgroundColor:"white",paddingTop:0,paddingBottom:0}}>
       <TextInput
           placeholder={"EMAIL"}
           placeholderTextColor={"#80d4b7"}
           style={{height: 60, borderColor:'gray', borderWidth: 1,
-                  backgroundColor:"white",borderRadius:5}}
+                  backgroundColor:"white",borderRadius:5,margin:5}}
           onChangeText={(text) => this.setState({text})}
           value={this.state.text}
         />
@@ -87,7 +92,9 @@ export default class Login extends React.Component {
         style={{backgroundColor:"white",marginLeft:33,marginRight:33,
           padding:5,borderRadius:3,marginTop:40,height:45,
           alignItems:"center",paddingTop:12,alignSelf: 'stretch'}}>
-          <Text style={{fontWeight:"bold",color:"#2E2E2E"}}> LOGIN </Text>
+          <Text style={{fontWeight:"bold",color:"#2E2E2E"}}> 
+            {(!this.state.loading) ? "LOGIN" : "LOGGING IN..."}
+          </Text>
       </TouchableOpacity>
 
           <Text style={{marginLeft:33,marginRight:33,fontSize:10,marginTop:10,color:"white"}}> 

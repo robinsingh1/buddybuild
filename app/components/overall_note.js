@@ -22,7 +22,7 @@ class TaskHeader extends React.Component {
     Actions.pop()
   }
 
-  onPress() {
+  onPress = () => {
     dismissKeyboard()
     Actions.finish_note(this.props)
   }
@@ -65,8 +65,8 @@ class TaskHeader extends React.Component {
 }
 
 export default class OverallNote extends React.Component {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     this.state = {
       text: ""
     }

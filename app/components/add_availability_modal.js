@@ -9,6 +9,8 @@ var mtz = require('moment-timezone');
 import React, {
   Alert,
   TouchableNativeFeedback,
+  DatePickerAndroid,
+  TimePickerAndroid,
   TouchableOpacity,
   Text,
   View,
@@ -26,7 +28,7 @@ export class AddAvailabilityHeader extends React.Component {
     this.donePress = this.donePress.bind(this)
   }
 
-  propTypes = {
+  static propTypes = {
     currentScreen: React.PropTypes.string.isRequired,
     startTime: React.PropTypes.string.isRequired,
     endTime: React.PropTypes.string.isRequired,
@@ -49,13 +51,26 @@ export class AddAvailabilityHeader extends React.Component {
           <Button onPress={this.onPress} style={{color:"#2D2D2D",fontSize:16}}>
             {(this.props.currentScreen) ? "Back" : "Cancel"}
           </Button>
+
+          <TouchableOpacity onPress={this.onPress} style={{padding:17}}>
+            <Icon name="chevron-left" size={15} color="#fff" 
+                style={{marginRight:5,marginTop:2,position:"absolute",left:0,top:21}}/>
+              <Text style={{fontWeight:"bold",color:"#2D2D2D",fontSize:16}}>
+            {(this.props.currentScreen) ? "Back" : "Cancel"}
+            </Text>
+          </TouchableOpacity>
+
         </View>
         <View >
           <Text style={{marginTop:-1,fontSize:18,color:"#2D2D2D",fontWeight:"bold"}}>{"Add Availability"}</Text>
         </View>
-        <View style={{position:"absolute",right:10,top:20}}>
-          <Button onPress={this.yoPress} style={{color:"#38C092",fontSize:16}}> 
-            Done </Button>
+
+        <View style={{position:"absolute",right:10,top:0}}>
+          <TouchableOpacity onPress={this.yoPress} style={{padding:17}}>
+              <Text style={{color:"#38C092",fontWeight:"bold",fontSize:16}}>
+                Done
+            </Text> 
+          </TouchableOpacity>
         </View>
       </View>
     )
@@ -157,7 +172,7 @@ export class AddAvailabilityHeader extends React.Component {
 }
 
 export default class AddAvailabilityModal extends React.Component {
-  propTypes = {
+  static propTypes = {
     addAvailability: React.PropTypes.string.isRequired
   }
 
@@ -177,6 +192,10 @@ export default class AddAvailabilityModal extends React.Component {
     this.toggleRecurringPeriod = this.toggleRecurringPeriod.bind(this)
     this.toggleRecurring = this.toggleRecurring.bind(this)
     this.setRecurringPeriod = this.setRecurringPeriod.bind(this)
+    this.datepicker = this.datepicker.bind(this)
+    //this.startTime = this.startTime.bind(this)
+    //this.endTime = this.endTime.bind(this)
+    this.setTime = this.setTime.bind(this)
   }
 
   validateRecurringPeriod() {
@@ -197,38 +216,45 @@ export default class AddAvailabilityModal extends React.Component {
     this.setState({setRecurringPeriod: !this.state.setRecurringPeriod})
   }
 
-  startTime = () => {
+  async setTime (k) {
     var _this = this;
-    NativeModules.DateAndroid.showTimepicker(function(){},function(hour, minute) {
-      minute = (minute < 10) ? "0"+minute : minute
-      var dayTime = (hour < 12 ) ? " am" : " pm"
-      hour = (hour < 12 ) ? hour : hour - 12
-      hour = (hour == 0 ) ? hour + 12 : hour
-      var startTime =  hour + ":" + minute + dayTime
-      _this.setState({startTime: startTime})
-    });
-  }
-  
-  endTime = () => {
-    var _this = this;
-    NativeModules.DateAndroid.showTimepicker(function() {}, function(hour, minute) {
-      minute = (minute < 10) ? "0"+minute : minute
-      var dayTime = (hour < 12 ) ? " am" : " pm"
-      hour = (hour < 12 ) ? hour : hour - 12
-      hour = (hour == 0 ) ? hour + 12 : hour
-      var endTime =  hour + ":" + minute + dayTime
-      _this.setState({endTime: endTime})
-    });
+    try {
+      const {action, hour, minute} = await TimePickerAndroid.open({
+        hour: 14,
+        minute: 0,
+        is24Hour: false, // Will display '2 PM'
+      });
+      if (action !== TimePickerAndroid.dismissedAction) {
+        // Selected hour (0-23), minute (0-59)
+        minute = (minute < 10) ? "0"+minute : minute
+        var dayTime = (hour < 12 ) ? " am" : " pm"
+        hour = (hour < 12 ) ? hour : hour - 12
+        hour = (hour == 0 ) ? hour + 12 : hour
+        var time =  hour + ":" + minute + dayTime
+        console.log(k)
+        console.log(time)
+        state = {}
+        state[k] = time
+        this.setState(state)
+      }
+    } catch ({code, message}) {
+      console.warn('Cannot open time picker', message);
+    }
   }
 
-  datepicker = () => {
+  async datepicker () {
     var _this = this;
-    NativeModules.DateAndroid.showDatepicker(function() {}, function(y, m, d) {
-      var date = moment().year(y).month(m).date(d).valueOf()
-      //.format("MMM DD, YYYY")
-      //console.log(date)
-      _this.setState({startDate: date});
-    });
+    try {
+      const {action, year, month, day} = await DatePickerAndroid.open({
+        date: new Date()
+      });
+      if (action !== DatePickerAndroid.dismissedAction) {
+        var date = moment().year(year).month(month).date(day).valueOf()
+        _this.setState({startDate: date});
+      }
+    } catch ({code, message}) {
+      console.warn('Cannot open date picker', message);
+    }
   }
 
   componentDidMount() {
@@ -269,7 +295,7 @@ export default class AddAvailabilityModal extends React.Component {
 
           <View style={{flexDirection:"row",justifyContent:"space-between",width:300,marginBottom:20}}>
             <Text>{"I'm available from"}</Text>
-            <TouchableOpacity onPress={this.startTime} style={{padding:15,marginTop:-15}}>
+            <TouchableOpacity onPress={() => { this.setTime('startTime').done() } } style={{padding:15,marginTop:-15}}>
               <Text style={{color:"#443E3E",fontSize:14,fontWeight:"bold",marginRight:10}}>
                 {(this.state.startTime) ? this.state.startTime : "Set Time" }
               </Text>
@@ -281,7 +307,7 @@ export default class AddAvailabilityModal extends React.Component {
 
           <View style={{flexDirection:"row",justifyContent:"space-between",width:300,marginBottom:60}}>
             <Text>To</Text>
-            <TouchableOpacity onPress={this.endTime} style={{padding:15,marginTop:-15}}>
+            <TouchableOpacity onPress={() => this.setTime('endTime')} style={{padding:15,marginTop:-15}}>
               <Text style={{color:"#443E3E",fontSize:14,fontWeight:"bold",marginRight:10}}>
                 {(this.state.endTime) ? this.state.endTime : "Set Time" }
               </Text>
@@ -311,7 +337,7 @@ export default class AddAvailabilityModal extends React.Component {
 }
 
 class SetRecurringPeriodView extends React.Component {
-  propTypes = {
+  static propTypes = {
     currentPeriod: React.PropTypes.string.isRequired,
     toggleRecurring: React.PropTypes.func.isRequired,
     setRecurringPeriod: React.PropTypes.bool.isRequired,
@@ -325,32 +351,48 @@ class SetRecurringPeriodView extends React.Component {
       startDate: (currentPeriod.startDate) ? currentPeriod.startDate : 0,
       endDate: (currentPeriod.endDate) ? currentPeriod.endDate : 0
     }
+    this.chooseRecurringStartDate = this.chooseRecurringStartDate.bind(this)
+    this.chooseRecurringEndDate = this.chooseRecurringEndDate.bind(this)
   }
 
-  chooseRecurringStartDate = () => {
+  async chooseRecurringStartDate () {
     var _this = this;
-    NativeModules.DateAndroid.showDatepicker(function(){}, function(year,month,day){
-      var date = moment().year(year).month(month).date(day).valueOf()
-      _this.setState({startDate: date});
+    try {
+      const {action, year, month, day} = await DatePickerAndroid.open({
+        date: new Date()
+      });
+      if (action !== DatePickerAndroid.dismissedAction) {
+        var date = moment().year(year).month(month).date(day).valueOf()
+        _this.setState({startDate: date});
 
-      _this.props.setRecurringPeriod({
-        startDate: date, 
-        endDate: _this.state.endDate
-      })
-    });
+        _this.props.setRecurringPeriod({
+          startDate: date, 
+          endDate: _this.state.endDate
+        })
+      }
+    } catch ({code, message}) {
+      console.warn('Cannot open date picker', message);
+    }
   }
 
-  chooseRecurringEndDate = () => {
+  async chooseRecurringEndDate () {
     var _this = this;
-    NativeModules.DateAndroid.showDatepicker(function(){}, function(year,month,day){
-      var date = moment().year(year).month(month).date(day).valueOf()
-      _this.setState({endDate: date});
+    try {
+      const {action, year, month, day} = await DatePickerAndroid.open({
+        date: new Date()
+      });
+      if (action !== DatePickerAndroid.dismissedAction) {
+        var date = moment().year(year).month(month).date(day).valueOf()
+        _this.setState({endDate: date});
 
-      _this.props.setRecurringPeriod({
-        startDate: _this.state.startDate, 
-        endDate: date
-      })
-    });
+        _this.props.setRecurringPeriod({
+          startDate: _this.state.startDate, 
+          endDate: date
+        })
+      }
+    } catch ({code, message}) {
+      console.warn('Cannot open date picker', message);
+    }
   }
 
 
@@ -358,7 +400,7 @@ class SetRecurringPeriodView extends React.Component {
     var startDate = this.state.startDate
 
     return (
-      <View style={{backgroundColor:"#FFF6E2",borderWidth:1,borderColor:"#FFCE66",height:170,width:300,marginTop:10,borderRadius:3}}>
+      <View style={{backgroundColor:"#FFF6E2",borderWidth:1,borderColor:"#FFCE66",height:150,width:300,marginTop:10,borderRadius:3}}>
         <View style={{alignItems:"center",flexDirection:"row",justifyContent:"space-between",width:200,marginLeft:40,marginTop:20}}>
           <Text>Start Date</Text>
           <Text>End Date</Text>
@@ -368,8 +410,7 @@ class SetRecurringPeriodView extends React.Component {
                   justifyContent:"space-between",width:250,marginLeft:20,
                   marginTop:0,marginBottom:10}}>
 
-          {(startDate) ? <Button style={{marginTop:25,paddingTop:10,paddingBottom:10}} onPress={this.chooseRecurringStartDate}>{moment(this.state.startDate).format("MMM DD, YYYY")}</Button> : <TouchableHighlight onPress={this.chooseRecurringStartDate} 
-              background={TouchableNativeFeedback.Ripple()} 
+          {(startDate) ? <Button style={{marginTop:25,paddingTop:10,paddingBottom:10}} onPress={this.chooseRecurringStartDate}>{moment(this.state.startDate).format("MMM DD, YYYY")}</Button> : <TouchableOpacity onPress={this.chooseRecurringStartDate} 
               style={{marginTop:10}}> 
               <View style={{backgroundColor:"#676767",marginLeft:0,padding:5,
                 borderRadius:3,marginTop:10,height:45,alignItems:"center",paddingTop:10,paddingLeft:10,paddingRight:10}}> 
@@ -377,9 +418,9 @@ class SetRecurringPeriodView extends React.Component {
                   Choose Date
                 </Text> 
             </View> 
-          </TouchableHighlight>}
+          </TouchableOpacity>}
 
-          {(this.state.endDate) ? <Button style={{marginTop:25,paddingTop:10,paddingBottom:10}} onPress={this.chooseRecurringEndDate}>{moment(this.state.endDate).format("MMM DD, YYYY")}</Button> : <TouchableHighlight onPress={this.chooseRecurringEndDate} 
+          {(this.state.endDate) ? <Button style={{marginTop:25,paddingTop:10,paddingBottom:10}} onPress={this.chooseRecurringEndDate}>{moment(this.state.endDate).format("MMM DD, YYYY")}</Button> : <TouchableOpacity onPress={this.chooseRecurringEndDate} 
               style={{marginTop:10}}> 
               <View style={{backgroundColor:"#676767",marginLeft:0,padding:5,
                 borderRadius:3,marginTop:10,height:45,alignItems:"center",paddingTop:10,paddingLeft:10,paddingRight:10}}> 
@@ -387,7 +428,7 @@ class SetRecurringPeriodView extends React.Component {
                   Choose Date
                 </Text> 
             </View> 
-          </TouchableHighlight> }
+          </TouchableOpacity> }
         </View>
       </View> 
     )
@@ -436,9 +477,10 @@ class SetRecurringPeriodView extends React.Component {
 }
 
 class RecurringPeriodView extends React.Component {
-  propTypes = {
-    recurringPeriod: React.PropTypes.Object.isRequired
+  static propTypes = {
+    //recurringPeriod: React.PropTypes.object.isRequired
   }
+
   render() {
     var startDate = moment(this.props.recurringPeriod.startDate).format("MMM DD")
     var endDate = moment(this.props.recurringPeriod.endDate).format("MMM DD")
