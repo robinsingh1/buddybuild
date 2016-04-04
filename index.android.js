@@ -5,7 +5,7 @@ import _ from "underscore"
 import VisitSummary, {VisitHeader} from './app/components/visit_summary'
 import Settings, { SettingsHeader } from "./app/components/settings"
 import TaskScreen, { TaskHeader, } from "./app/components/task_screen"
-import MapView, { MapHeader } from "./app/components/map_view"
+import MapDetailView from "./app/components/map_view"
 import AddAvailabilityModal, { AddAvailabilityHeader } from "./app/components/add_availability_modal"
 
 import MedicalSupplyNote from "./app/components/medical_note"
@@ -195,8 +195,8 @@ var AwesomeProject = React.createClass({
           <Schema name="withoutAnimation"/>
 
           <Route name="launch" schema="default" component={Main} initial={true} title="SAGE" header={Header} />
-          <Route name="map_detail" schema="default" component={MapView} initial={false} title="SAGE" header={MapHeader} />
           <Route name="splash" schema="default" component={SplashScreen} initial={true} title="SAGE" />
+          <Route name="map_detail" schema="default" component={MapDetailView} initial={false} title="SAGE" />
           <Route name="notes_screen" component={TaskScreen} initial={false} />
           <Route name="next_notes_screen" component={TaskScreen}  />
           <Route name="medical_supplies" component={MedicalSupplyNote} initial={false}/>

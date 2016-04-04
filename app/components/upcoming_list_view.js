@@ -118,6 +118,7 @@ export default class UpcomingListView extends React.Component {
     }
     if(res.status == 200) {
       var res = await res.json();
+      //console.log(res)
       events = res.events
       let empty = !events.length
       events = (replace) ? events : _this.state.events.concat(events) 
@@ -139,7 +140,7 @@ export default class UpcomingListView extends React.Component {
   shouldComponentUpdate (a, b) {
     //if(a.lastLoaded != b.lastLoaded) {
     //if(this.props.page == "upcoming") {
-    console.log("should component update?")
+    //console.log("should component update?")
     return a.page != b.page
     /*
       if(a.page != b.page) {

@@ -22,6 +22,7 @@
     "react-native-gmaps": "^1.0.7",
     "react-native-icons": "^0.7.0",
     "react-native-keyboard-spacer": "^0.1.6",
+    "react-native-maps": "^0.3.1",
     "react-native-router-flux": "^2.0.9",
     "react-native-scrollable-tab-view": "^0.3.4",
     "react-native-simple-store": "^0.1.0",

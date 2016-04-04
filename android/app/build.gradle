@@ -137,4 +137,5 @@ dependencies {
     compile project(':reactdate')
     compile project(':react-native-gmaps')
     compile project(':react-native-vector-icons')
+    compile project(':react-native-maps')
 }

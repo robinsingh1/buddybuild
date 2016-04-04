@@ -11,6 +11,7 @@ import java.util.List;
 import com.rota.rngmaps.RNGMapsPackage; 
 import me.nucleartux.date.ReactDatePackage;
 import com.oblador.vectoricons.VectorIconsPackage;
+import com.AirMaps.AirPackage;
 
 public class MainActivity extends ReactActivity {
 
@@ -42,6 +43,7 @@ public class MainActivity extends ReactActivity {
             new MainReactPackage(),
             new ReactDatePackage(this),
             new RNGMapsPackage(),
+            new AirPackage(),
             new VectorIconsPackage(),
             new ReactNativeIcons()
         );

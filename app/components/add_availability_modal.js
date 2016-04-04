@@ -222,7 +222,7 @@ export default class AddAvailabilityModal extends React.Component {
       const {action, hour, minute} = await TimePickerAndroid.open({
         hour: 14,
         minute: 0,
-        is24Hour: false, // Will display '2 PM'
+        is24Hour: true, // Will display '2 PM'
       });
       if (action !== TimePickerAndroid.dismissedAction) {
         // Selected hour (0-23), minute (0-59)
@@ -231,8 +231,6 @@ export default class AddAvailabilityModal extends React.Component {
         hour = (hour < 12 ) ? hour : hour - 12
         hour = (hour == 0 ) ? hour + 12 : hour
         var time =  hour + ":" + minute + dayTime
-        console.log(k)
-        console.log(time)
         state = {}
         state[k] = time
         this.setState(state)
@@ -258,6 +256,7 @@ export default class AddAvailabilityModal extends React.Component {
   }
 
   componentDidMount() {
+    
   }
 
   render() {

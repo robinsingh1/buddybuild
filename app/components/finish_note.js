@@ -69,11 +69,13 @@ export default class FinishNote extends React.Component {
   }
 
   async onPress() {
+    console.log(this.props)
     body  = {
         "checkOutTime": this.props.checkOutTime,
         "metadata": {
             "checkOutGeolocation": this.props.checkOutGeolocation,          
             "notes": this.props.overallNote
+            // TODO add supply notes + medical notes
         },
         "Tasks": this.props.tasks
     }

@@ -186,25 +186,37 @@ class MapButton extends React.Component {
       location: {}
     }
     this.imagePress = this.imagePress.bind(this)
+    this.getLocationDetails = this.getLocationDetails.bind(this)
   }
 
-  imagePress() {
+  imagePress = () => {
     let _location = this.state.location
-    Actions.map_detail({location: _location})
+    console.log(_location)
+    Actions.map_detail({...this.props, location: _location })
   }
 
-  componentDidMount() {
+  async getLocationDetails() {
     let apiKey = "AIzaSyAyeTz-PBVZu1sSv1JeeCeE2xOI6xSiW6s"
     let url = "https://maps.googleapis.com/maps/api/geocode/json?"
     url = url+`address=${this.props.address}&key=${apiKey}`
+    console.log(url)
 
     var _this = this;
-    fetch(url, { method: 'GET'}).then(function(res) {
-      let body = JSON.parse(res._bodyInit)
+    var data = await fetch(url, { method: 'GET'})
+    var body = await data.json()
+    //.then(function(res) {
+    //console.log(res)
+      //let body = JSON.parse(res._bodyInit)
+    //console.log(body)
       body = body.results[0]
       let location = body.geometry.location
+      //console.log(location)
       _this.setState({location: location})
-    })
+      //})
+  }
+
+  componentDidMount() {
+    this.getLocationDetails().done()
   }
 
   render() {
@@ -352,7 +364,7 @@ export default class VisitSummary extends React.Component {
         </Text>
 
         <Text style={{textAlign:"center"}}> {address} </Text>
-        <MapButton address={address}/>
+        <MapButton address={address} {...this.props}/>
         <TimingComponent checkinTime={this.state.checkedIn} data={this.props.data}/>
 
         <View style={{borderColor:"black"}}>
