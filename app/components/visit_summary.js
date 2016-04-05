@@ -293,7 +293,6 @@ export default class VisitSummary extends React.Component {
       let time = moment().valueOf()
       var _this = this;
       var url = `https://app.sage.care/api/v1/cp/s/events/${this.props.data.id}/checkin`
-      var url = `http://dev.sage.care/api/v1/cp/s/events/${this.props.data.id}/checkin`
       geo = {lat: 30, lng: 30}
       let body={checkInTime: moment().valueOf(), metadata: {checkInGeolocation: geo}}
       body = JSON.stringify(body)
