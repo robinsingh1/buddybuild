@@ -68,10 +68,7 @@ export default class AvailabilityView extends React.Component {
     var res = await fetch(url, { method: 'GET', headers: App.headers(token)})
     if(res.status == 200) {
       var res = await res.json()
-      console.log('availability')
-      console.log(res)
       var events = res.availabilities
-      console.log(events)
       let empty = !events.length
       if(!replace)
         events = _this.state.events.concat(events)

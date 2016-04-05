@@ -28,8 +28,6 @@ class TaskHeader extends React.Component {
   }
 
   render() {
-    //console.log("visit header")
-    //console.log(this.props)
     // {(this.props.currentScreen) ? "Back" : "Continue"}
 
     return (
@@ -74,7 +72,6 @@ export default class FinishNote extends React.Component {
   }
 
   async onPress() {
-    console.log(this.props)
     body  = {
         "checkOutTime": this.props.checkOutTime,
         "metadata": {
@@ -91,14 +88,11 @@ export default class FinishNote extends React.Component {
         "Tasks": this.props.tasks
     }
     this.setState({loading: true})
-    console.log(body)
     let body = JSON.stringify(body)
     var token = await store.get("_token")
     var url = `https://app.sage.care/api/v1/cp/s/events/${this.props._id}/checkout`
-    console.log(url)
     var res = await fetch(url, { method: 'PUT', headers: App.headers(token), body: body})
     var data = await res.json()
-    console.log(data)
     if(res.status == 200) {
       Actions.launch({type: "replace"})
       this.setState({loading: false})
@@ -112,10 +106,8 @@ export default class FinishNote extends React.Component {
   }
 
   render() {
-    console.log(this.props)
     var btnColor = "#40BF93"
     var btnText = (this.state.loading) ? "LOADING ..." : "BACK TO VISITS"
-    //console.log(this.props)
     return (
       <View>
         <TaskHeader />

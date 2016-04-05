@@ -51,7 +51,6 @@ export default class PastListView extends React.Component {
   }
 
   renderRow(rowData) {
-    console.log(rowData)
     let client = rowData.Client
     client.gender = (client.gender) ? client.gender : "M"
     
@@ -60,7 +59,6 @@ export default class PastListView extends React.Component {
       let diff = moment(rowData.checkInTime).diff(moment(rowData.checkOutTime))
       let duration = moment.duration(diff)._data
 
-      console.log(duration)
       if(duration.days) 
         actualDuration = Math.abs(duration.days) + " days " 
       if(duration.hours)
@@ -71,7 +69,6 @@ export default class PastListView extends React.Component {
     } else {
       let actualDuration = ""
     }
-    console.log(rowData)
 
     return (
       <TouchableHighlight 
@@ -209,7 +206,6 @@ export default class PastListView extends React.Component {
   }
 
   onRefresh = () => {
-    console.log("refresh")
     this.setState({loading: true})
     this.loadEvents(0, true)
   }

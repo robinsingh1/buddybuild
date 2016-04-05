@@ -58,7 +58,6 @@ class TimingComponent extends React.Component {
   }
 
   render() {
-    //console.log(this.props)
     return (
       <View style={{borderColor:"#ddd",borderWidth:1,flexDirection:'row',
         elevation:1, backgroundColor:"white",width:335,borderRadius:5,
@@ -192,7 +191,6 @@ class MapButton extends React.Component {
 
   imagePress = () => {
     let _location = this.state.location
-    console.log(_location)
     Actions.map_detail({...this.props, location: _location })
   }
 
@@ -200,18 +198,14 @@ class MapButton extends React.Component {
     let apiKey = "AIzaSyAyeTz-PBVZu1sSv1JeeCeE2xOI6xSiW6s"
     let url = "https://maps.googleapis.com/maps/api/geocode/json?"
     url = url+`address=${this.props.address}&key=${apiKey}`
-    console.log(url)
 
     var _this = this;
     var data = await fetch(url, { method: 'GET'})
     var body = await data.json()
     //.then(function(res) {
-    //console.log(res)
       //let body = JSON.parse(res._bodyInit)
-    //console.log(body)
       body = body.results[0]
       let location = body.geometry.location
-      //console.log(location)
       _this.setState({location: location})
       //})
   }
@@ -267,8 +261,6 @@ export default class VisitSummary extends React.Component {
   }
 
   async _press() {
-    console.log("press")
-    // _press() {
     if(_.isEqual(this.state.geo, {})) {
       Alert.alert( 'Warning!', "We couldn't check you in/out right now due to an error. Please call +1 877-960-0235.",
         [{text: 'Cancel', onPress: () => { }}, {text: 'Yes', onPress: () => { }}])
@@ -280,7 +272,6 @@ export default class VisitSummary extends React.Component {
     if(this.state.checkedIn) {
       let _this = this;
       if(this.props.data["Tasks"].length) {
-        console.log("notes")
         Actions.notes_screen({currentScreen: 0, 
                               _id: _this.props.data.id,
                               checkOutTime: moment().format(),
@@ -305,12 +296,10 @@ export default class VisitSummary extends React.Component {
       var url = `http://dev.sage.care/api/v1/cp/s/events/${this.props.data.id}/checkin`
       geo = {lat: 30, lng: 30}
       let body={checkInTime: moment().valueOf(), metadata: {checkInGeolocation: geo}}
-      //console.log(body)
       body = JSON.stringify(body)
       var data  = await fetch(url, { method: 'PUT', headers: App.headers(token), body: body})
       var res = await data.json()
       //.then(function(res) {
-        console.log(res)
         if(res.status == 200) {
           _this.setState({checkedIn:  time, loading: false})
           _this.props.updateCheckedinState(_this.props.data.id, time)

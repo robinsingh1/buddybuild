@@ -13,7 +13,6 @@ export class MapHeader extends React.Component {
   }
 
   render() {
-    //console.log(this.props)
     return (
       <View style={{height:60,backgroundColor:"#425869",alignItems:"center",paddingTop:20}}>
         <View style={{position:"absolute",left:10,top:0}}>
@@ -38,7 +37,6 @@ export class MapHeader extends React.Component {
 export default class MapDetailView extends React.Component {
   render() {
     var location = this.props.location
-    //console.log(location)
     //location = {lat: 10.0, lng: 51.0}
     var lat = location.lat
     var lng = location.lng

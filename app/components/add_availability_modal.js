@@ -105,18 +105,13 @@ export class AddAvailabilityHeader extends React.Component {
       this.warningMessage("Your recurring period's start date cannot be the same as your end date.")
     } else {
       var startTime = this.props.startTime.split(" ")[0].split(":")
-      console.log(startTime)
       var hour = parseInt(startTime[0]); 
       var min = parseInt(startTime[1]);
       hour = (this.props.startTime.indexOf("pm") == -1) ? hour : hour + 12
-      console.log(hour)
       hour = (hour == 0) ? hour + 12 : hour
       
-      console.log(hour)
       startTime = moment(this.props.startDate).hour(hour).minute(min).format()
-      console.log(startTime)
       startTime = mtz(startTime).tz("America/Toronto").tz("UTC").format()
-      console.log(startTime)
 
       var endTime = this.props.endTime.split(" ")[0].split(":")
       hour = parseInt(endTime[0]); 
@@ -125,14 +120,10 @@ export class AddAvailabilityHeader extends React.Component {
       hour = (hour == 0) ? hour + 12 : hour
       endTime = moment(this.props.endDate).hour(hour).minute(min).format()
 
-      console.log(startTime)
-      console.log(endTime)
       let diff = moment(startTime).diff(moment(endTime))
       let duration = moment.duration(diff)
       duration = duration.hours() + duration.minutes() / 60
       duration = Math.abs(duration)
-      console.log("duration")
-      console.log(duration)
 
       var event = {   
         "duration": duration,
@@ -483,7 +474,6 @@ class RecurringPeriodView extends React.Component {
   render() {
     var startDate = moment(this.props.recurringPeriod.startDate).format("MMM DD")
     var endDate = moment(this.props.recurringPeriod.endDate).format("MMM DD")
-    console.log("render")
     return (
       <View style={{backgroundColor:"#FFF6E2",borderWidth:1,borderColor:"#FFCE66",
                     height:70,width:300,marginTop:10,borderRadius:3}}>

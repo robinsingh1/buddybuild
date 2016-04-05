@@ -109,7 +109,6 @@ export default class MedicalSupplyNote extends React.Component {
 
   render() {
     var height = Dimensions.get('window').height
-    console.log(this.props)
 
     var _this = this;
     var inputs = _.map(_.range(this.state.medicalNotes.length), function(a, b) {
