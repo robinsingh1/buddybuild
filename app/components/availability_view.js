@@ -42,7 +42,7 @@ export default class AvailabilityView extends React.Component {
   }
 
   async deleteAvailability(rowData) {
-    let url = "http://dev.sage.care/api/v1/cp/s/availabilities/"+rowData.id
+    let url = "https://app.sage.care/api/v1/cp/s/availabilities/"+rowData.id
     var _this = this;
     var current_events = this.state.events
     var token = await store.get("_token")

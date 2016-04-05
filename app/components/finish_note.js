@@ -1,7 +1,9 @@
 import App from "./globals"
 import Icon from 'react-native-vector-icons/FontAwesome'
+import _ from 'underscore'
 import { Actions } from 'react-native-router-flux'
 var store = require('react-native-simple-store');
+import GiftedSpinner from 'react-native-gifted-spinner'
 
 import React, {
   Alert,
@@ -58,6 +60,9 @@ class TaskHeader extends React.Component {
 export default class FinishNote extends React.Component {
   constructor(props) {
     super(props)
+    this.state = {
+      loading: false,
+    }
     this.onPress = this.onPress.bind(this)
   }
   propTypes = {
@@ -74,33 +79,42 @@ export default class FinishNote extends React.Component {
         "checkOutTime": this.props.checkOutTime,
         "metadata": {
             "checkOutGeolocation": this.props.checkOutGeolocation,          
-            "notes": this.props.overallNote
+            "notes": this.props.overallNote,
             // TODO add supply notes + medical notes
+            "observations": _.values(this.props.medicalValues), 
+            "supplies": _.map(this.props.supplyValues, function(supply) { 
+              return {
+                "name": supply
+              }
+            })
         },
         "Tasks": this.props.tasks
     }
+    this.setState({loading: true})
     console.log(body)
     let body = JSON.stringify(body)
     var token = await store.get("_token")
-    var url = `http://dev.sage.care/api/v1/cp/s/events/${this.props._id}/checkout`
+    var url = `https://app.sage.care/api/v1/cp/s/events/${this.props._id}/checkout`
     console.log(url)
     var res = await fetch(url, { method: 'PUT', headers: App.headers(token), body: body})
     var data = await res.json()
     console.log(data)
     if(res.status == 200) {
       Actions.launch({type: "replace"})
+      this.setState({loading: false})
     } else {
       Alert.alert( 'Warning!', 'There was an error - please try again.',
       [ {text: 'Cancel', onPress: () => {  }, style: 'cancel'},
         {text: 'Yes', onPress: () => { }}
       ])
+      this.setState({loading: false})
     }
   }
 
   render() {
     console.log(this.props)
     var btnColor = "#40BF93"
-    var btnText = "BACK TO VISITS"
+    var btnText = (this.state.loading) ? "LOADING ..." : "BACK TO VISITS"
     //console.log(this.props)
     return (
       <View>
@@ -113,6 +127,7 @@ export default class FinishNote extends React.Component {
         </View>
       <TouchableOpacity onPress={this.onPress}> 
         <View style={{backgroundColor:btnColor,marginLeft:0,padding:5,borderRadius:3,marginTop:10,height:45,width:335,alignItems:"center",paddingTop:10}}> 
+          {(this.state.loading) ? <GiftedSpinner color={"white"} style={{height:18, position:"absolute",left:-100,top:1}}/> : <View /> }
           <Text style={{fontWeight:"bold",color:"white"}}> {btnText} </Text> 
       </View> 
       </TouchableOpacity> 

@@ -3,6 +3,7 @@ import Dimensions from 'Dimensions';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import moment from "moment"
 import React from 'react-native'
+import GiftedSpinner from 'react-native-gifted-spinner'
 //var React = require('react-native')
 import { Actions } from 'react-native-router-flux'
 import _ from "underscore"
@@ -251,6 +252,7 @@ export default class VisitSummary extends React.Component {
       checkedOut: false,
       checkinTime: this.props.data.checkInTime,
       checkoutTime: 0,
+      loading: false,
       geo: {}
     }
     this._press = this._press.bind(this)
@@ -293,24 +295,31 @@ export default class VisitSummary extends React.Component {
                               tasks: _this.props.data["Tasks"], 
                               name: _this.props.name})
       }
-        
       this.setState({ checkedOut: moment().valueOf()})
     } else {
+      this.setState({loading: true })
       var token = await store.get("_token")
       let time = moment().valueOf()
       var _this = this;
-      let url = `http://dev.sage.care/api/v1/cp/s/events/${this.props.data.id}/checkin`
+      var url = `https://app.sage.care/api/v1/cp/s/events/${this.props.data.id}/checkin`
+      var url = `http://dev.sage.care/api/v1/cp/s/events/${this.props.data.id}/checkin`
+      geo = {lat: 30, lng: 30}
       let body={checkInTime: moment().valueOf(), metadata: {checkInGeolocation: geo}}
+      //console.log(body)
       body = JSON.stringify(body)
-      fetch(url, { method: 'PUT', headers: App.headers(token), body: body})
-      .then(function(res) {
+      var data  = await fetch(url, { method: 'PUT', headers: App.headers(token), body: body})
+      var res = await data.json()
+      //.then(function(res) {
+        console.log(res)
         if(res.status == 200) {
-          _this.setState({checkedIn:  time})
+          _this.setState({checkedIn:  time, loading: false})
           _this.props.updateCheckedinState(_this.props.data.id, time)
         } else {
           Alert.alert( 'Warning!', " Warning: We couldn't check you in/out right now due to an error. Please call +1 877-960-0235. ",
-          [{text: 'Cancel', onPress:() => {}}, {text:'Yes', onPress: () => { }}]) }
-      })
+          [{text: 'Cancel', onPress:() => {}}, {text:'Yes', onPress: () => { }}]) 
+          this.setState({loading: false})
+        }
+          //})
     }
   }
 
@@ -338,7 +347,8 @@ export default class VisitSummary extends React.Component {
     let client = (data.Client) ? data.Client : {}
 
     let btnColor = (this.state.checkedIn) ?  "red" : "#40BF93"
-    let btnText = (this.state.checkedIn) ?  "CHECK OUT" : "CHECK IN"
+    var btnText = (this.state.checkedIn) ?  "CHECK OUT" : "CHECK IN"
+    btnText = (this.state.loading) ? "CHECKING IN..."  : btnText
     let address = client.addressLocality + ", "+ client.addressRegion + ", "
     address = address + client.postalCode
 
@@ -352,6 +362,8 @@ export default class VisitSummary extends React.Component {
                   <View style={{backgroundColor:btnColor,marginLeft:35,padding:5,
                     borderRadius:3,marginTop:10,height:45,width:335,
                   alignItems:"center",paddingTop:10}}> 
+                  {(this.state.loading) ? <GiftedSpinner color={"white"} style={{height:18, position:"absolute",left:-100,top:1}}/> : <View /> }
+
                     <Text style={{fontWeight:"bold",color:"white"}}> 
                       {btnText} 
                     </Text> 

@@ -151,7 +151,7 @@ export class AddAvailabilityHeader extends React.Component {
         })
       } 
       var token = await store.get("_token")
-      var url = "http://dev.sage.care/api/v1/cp/s/availabilities"
+      var url = "https://app.sage.care/api/v1/cp/s/availabilities"
       var data = { method: 'POST', body: JSON.stringify(event), 
                    headers: App.headers(token) }
       fetch(url, data).then(function(res) {
