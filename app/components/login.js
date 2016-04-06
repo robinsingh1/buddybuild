@@ -75,7 +75,7 @@ export default class Login extends React.Component {
           placeholder={"EMAIL"}
           placeholderTextColor={"#80d4b7"}
           style={{height: 60, borderColor:'gray', borderWidth: 1,
-                  backgroundColor:"white",borderRadius:5,margin:5}}
+                  backgroundColor:"white",borderRadius:5,margin:5,marginBottom:0}}
           onChangeText={(text) => this.setState({text})}
           value={this.state.text}
         />
@@ -83,7 +83,7 @@ export default class Login extends React.Component {
           placeholder={"PASSWORD"}
           placeholderTextColor={"#80d4b7"}
           underlineColorAndroid={"#FFCE66"}
-          style={{height: 40, borderColor: 'gray', borderWidth: 1,marginTop:0,backgroundColor:"white",borderRadius:5}}
+          style={{height: 40, borderColor: 'gray', borderWidth: 1,marginTop:0,backgroundColor:"white",borderRadius:5,margin:5}}
           onChangeText={(textt) => this.setState({textt})}
           secureTextEntry={true}
           value={this.state.textt} />

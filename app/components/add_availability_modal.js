@@ -26,6 +26,9 @@ export class AddAvailabilityHeader extends React.Component {
     super()
     this.yoPress = this.yoPress.bind(this)
     this.donePress = this.donePress.bind(this)
+    this.state  = {
+      loading: false
+    }
   }
 
   static propTypes = {
@@ -66,7 +69,8 @@ export class AddAvailabilityHeader extends React.Component {
         </View>
 
         <View style={{position:"absolute",right:10,top:0}}>
-          <TouchableOpacity onPress={this.yoPress} style={{padding:17}}>
+          <TouchableOpacity onPress={this.yoPress} style={{padding:17}}
+            disabled={this.state.loading}>
               <Text style={{color:"#38C092",fontWeight:"bold",fontSize:16}}>
                 Done
             </Text> 
@@ -104,6 +108,7 @@ export class AddAvailabilityHeader extends React.Component {
     } else if(this.props.recurring && moment(this.props.recurringPeriod.startDate).format("MMM DD, YYYY") == moment(this.props.recurringPeriod.endDate).format("MMM DD, YYYY")) {
       this.warningMessage("Your recurring period's start date cannot be the same as your end date.")
     } else {
+      this.setState({loading: true})
       var startTime = this.props.startTime.split(" ")[0].split(":")
       var hour = parseInt(startTime[0]); 
       var min = parseInt(startTime[1]);
@@ -153,12 +158,14 @@ export class AddAvailabilityHeader extends React.Component {
           res = (event.recurring) ? res.availabilities : res.availability
           _this.props.addAvailability(res)
           Actions.pop()
+          this.setState({loading: false})
         } else {
           res = await res.json()
           Alert.alert( 'Warning!', 'There was an error - please try again.',
           [ {text: 'Cancel', onPress: () => { }, style: 'cancel'},
             {text: 'Yes', onPress: () => { }}
           ])
+          this.setState({loading: false})
         }
     }
   }
