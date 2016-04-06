@@ -37,9 +37,7 @@ export class MapHeader extends React.Component {
 export default class MapDetailView extends React.Component {
   render() {
     var location = this.props.location
-    //location = {lat: 10.0, lng: 51.0}
-    var lat = location.lat
-    var lng = location.lng
+    var lat = location.lat; var lng = location.lng;
     var height = Dimensions.get('window').height
     var width = Dimensions.get('window').width
     return (
@@ -47,7 +45,7 @@ export default class MapDetailView extends React.Component {
         <MapHeader {...this.props}/>
       <View>
        <MapView 
-          style={{height: height, width: width }}
+          style={{height: height, width: width ,position:"absolute",top:0,left:0,right:0,bottom:0}}
           initialRegion={{
             latitude: lat, longitude: lng,
             //latitude: 10.0, longitude: 51.0,

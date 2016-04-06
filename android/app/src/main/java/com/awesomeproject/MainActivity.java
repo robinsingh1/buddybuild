@@ -8,10 +8,10 @@ import com.facebook.react.shell.MainReactPackage;
 import java.util.Arrays;
 import java.util.List;
 
-import com.rota.rngmaps.RNGMapsPackage; 
 import me.nucleartux.date.ReactDatePackage;
 import com.oblador.vectoricons.VectorIconsPackage;
-import com.AirMaps.AirPackage;
+import com.AirMaps.AirPackage; // <--- This!
+
 
 public class MainActivity extends ReactActivity {
 
@@ -42,7 +42,6 @@ public class MainActivity extends ReactActivity {
         return Arrays.<ReactPackage>asList(
             new MainReactPackage(),
             new ReactDatePackage(this),
-            new RNGMapsPackage(),
             new AirPackage(),
             new VectorIconsPackage(),
             new ReactNativeIcons()
