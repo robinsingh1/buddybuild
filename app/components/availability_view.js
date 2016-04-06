@@ -61,6 +61,7 @@ export default class AvailabilityView extends React.Component {
   }
 
   async loadData(page, replace) {
+    this.setState({loading: true})
     page = (typeof(page) != "undefined") ? page : this.state.page
     var url = App.availability_url+`page=${page}&startDate=${moment().format('ddd MM-DD-YYYY HH:mm:ssZZ')}`
     var _this = this;
@@ -79,7 +80,7 @@ export default class AvailabilityView extends React.Component {
                       loadingMore: false,
                       empty: empty })
     } else {
-      _this.setState({error: true})
+      _this.setState({error: true, loading: false})
     }
   }
 
@@ -113,6 +114,7 @@ export default class AvailabilityView extends React.Component {
         loadingMore = <GiftedSpinner style={{marginTop:20,marginBottom:30,height:20}}/>
       }
     }
+
     return (
       <View >
         <View style={{backgroundColor:"#F9F9F9",marginTop:3,marginLeft:3,height:70,borderBottomWidth:1,borderBottomColor:"#D2D2D2",alignItems:"center"}} >
@@ -122,19 +124,20 @@ export default class AvailabilityView extends React.Component {
                 </View> 
             </TouchableOpacity> 
         </View>
-      <PullToRefreshViewAndroid
-        onRefresh={this.onRefresh}
-        enabled={true}
-        style={{backgroundColor:"white"}}>
-        <ScrollView style={{height:height-220}}>
-          <AvailabilityListView 
-              loadData={this.loadData}
-              paginate={this.paginate}
-              deleteAvailability={this.deleteAvailability}
-              events={this.state.events}/>
-          {loadingMore}
-        </ScrollView>
-      </PullToRefreshViewAndroid>
+        <PullToRefreshViewAndroid
+          onRefresh={this.onRefresh}
+          enabled={true}
+          style={{backgroundColor:"white"}}>
+          <ScrollView style={{height:height-220}}>
+            {(this.state.loading) ? <GiftedSpinner style={{height:20,marginTop:20}}/> : <View />}
+            <AvailabilityListView 
+                loadData={this.loadData}
+                paginate={this.paginate}
+                deleteAvailability={this.deleteAvailability}
+                events={this.state.events}/>
+            {loadingMore}
+          </ScrollView>
+        </PullToRefreshViewAndroid>
       </View>
     )
   }

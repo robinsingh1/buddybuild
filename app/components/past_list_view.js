@@ -94,8 +94,7 @@ export default class PastListView extends React.Component {
                 <Text style={{color:"#40BF93",fontSize:12}}>{mtz(rowData.startTime).tz("America/Toronto").format('h:mm A').toString()}</Text>
               </View>
               <View style={{flexDirection:"row"}}>
-              <View style={{height:10,width:10,borderRadius:5,marginTop:4,marginRight:10,
-                    backgroundColor:"#F02200"}}/>
+              <View style={{height:10,width:10,borderRadius:5,marginTop:4,marginRight:10, backgroundColor:"#F02200"}}/>
                 <Text style={{color:"#F02200",fontSize:12}}>{mtz(rowData.startTime).add(rowData.duration,'h').tz("America/Toronto").format('h:mm A').toString()}</Text>
               </View>
             </View>
@@ -103,7 +102,7 @@ export default class PastListView extends React.Component {
           <View style={{flexDirection:'row',justifyContent:"space-between",
             backgroundColor:"#494949", padding:12,paddingRight:25,
             borderBottomLeftRadius:5,borderBottomRightRadius:5,
-            borderRadius:5,borderTopRightRadius:0}}>
+            borderTopLeftRadius:0, borderRadius:5,borderTopRightRadius:0,marginTop:4}}>
             <View>
               <Text style={{fontSize:14,color:(rowData.status != "cancelled") ? "#40BF93" : "#FFCE66"}}>{this.capitalize(rowData.status)}</Text>
               <Text style={{fontSize:12,color:"white",height:15}}>

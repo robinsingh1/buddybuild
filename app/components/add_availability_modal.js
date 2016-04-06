@@ -110,7 +110,8 @@ export class AddAvailabilityHeader extends React.Component {
       hour = (this.props.startTime.indexOf("pm") == -1) ? hour : hour + 12
       hour = (hour == 0) ? hour + 12 : hour
       
-      startTime = moment(this.props.startDate).hour(hour).minute(min).format()
+      startTime = moment(this.props.startDate).hour(hour).minute(min)
+      startTime = startTime.second(0).format()
       startTime = mtz(startTime).tz("America/Toronto").tz("UTC").format()
 
       var endTime = this.props.endTime.split(" ")[0].split(":")
@@ -118,7 +119,7 @@ export class AddAvailabilityHeader extends React.Component {
       min = parseInt(endTime[1]);
       hour = (this.props.endTime.indexOf("pm") == -1) ? hour : hour + 12
       hour = (hour == 0) ? hour + 12 : hour
-      endTime = moment(this.props.endDate).hour(hour).minute(min).format()
+      endTime = moment(this.props.endDate).hour(hour).minute(min).second(0).format()
 
       let diff = moment(startTime).diff(moment(endTime))
       let duration = moment.duration(diff)
@@ -141,28 +142,22 @@ export class AddAvailabilityHeader extends React.Component {
           recurring: true
         })
       } 
+
       var token = await store.get("_token")
       var url = "https://app.sage.care/api/v1/cp/s/availabilities"
       var data = { method: 'POST', body: JSON.stringify(event), 
                    headers: App.headers(token) }
       var res =  await fetch(url, data)//.then(function(res) {
-        console.log(res)
         if(res.status == 200) {
-          //res = JSON.parse(res._bodyText)
           res = await res.json()
-          console.log(res)
           res = (event.recurring) ? res.availabilities : res.availability
-          _this.props.addAvailability(res)
-          Actions.pop()
         } else {
           res = await res.json()
-          console.log(res)
           Alert.alert( 'Warning!', 'There was an error - please try again.',
           [ {text: 'Cancel', onPress: () => { }, style: 'cancel'},
             {text: 'Yes', onPress: () => { }}
           ])
         }
-        //})
     }
   }
 }

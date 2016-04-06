@@ -104,7 +104,6 @@ export default class TaskScreen extends React.Component {
   }
 
   render() {
-    console.log(this.props)
     let height = Dimensions.get('window').height
     let icons = {
       'entry':  <Image style={{position:"absolute",left:55,top:20}} source={require("./img/icon-entry@2x.png")} />,

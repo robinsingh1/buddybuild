@@ -101,7 +101,6 @@ export default class AvailabilityListView extends React.Component {
       var d1 = moment().year(year).dayOfYear((key-1)*7).format("MMM D")
       var d2 = moment().year(year).dayOfYear(key*7).format("MMM D")
       sorted_events[d1+" - "+d2] = _.sortBy(byweek[key],  "timestamp")
-      //console.log(byweek[key])
     })
     return sorted_events
   }
@@ -138,7 +137,7 @@ export default class AvailabilityListView extends React.Component {
               </View>
               <View style={{flexDirection:"row"}}>
                   <Text style={{fontSize:12,textAlign:"center",width:100}}>
-                    {"to " + mtz(rowData.startTime).add(rowData.duration,'h').tz('America/Toronto').format('h:mm A').toString()}
+                    {"to " + mtz(rowData.startTime).add(rowData.duration,'h').format('h:mm A').toString()}
                   </Text>
               </View>
             </View>
