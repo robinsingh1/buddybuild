@@ -151,6 +151,8 @@ export class AddAvailabilityHeader extends React.Component {
         if(res.status == 200) {
           res = await res.json()
           res = (event.recurring) ? res.availabilities : res.availability
+          _this.props.addAvailability(res)
+          Actions.pop()
         } else {
           res = await res.json()
           Alert.alert( 'Warning!', 'There was an error - please try again.',

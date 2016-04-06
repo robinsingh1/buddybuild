@@ -200,7 +200,8 @@ export default class PastListView extends React.Component {
   renderSectionHeader(sectionData, sectionID) {
     return (
       <View style={{backgroundColor:"white"}}>
-        <Text style={{fontSize:20,marginLeft:10,marginTop:5,marginBottom:5,color:"#40BF93"}}>{sectionID}</Text>
+        <Text style={{fontSize:20,marginLeft:10,marginTop:20,marginBottom:2,
+          color:"#40BF93"}}>{sectionID}</Text>
       </View>
     )
   }
