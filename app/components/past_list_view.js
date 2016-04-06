@@ -154,10 +154,11 @@ export default class PastListView extends React.Component {
     page = (typeof(page) == "undefined") ? this.state.page : page
     var _this = this;
     var token = await store.get("_token")
-    var url = App.event_url+`page=${this.state.page}&endDate=${moment().format('ddd MM-DD-YYYY HH:mm:ssZZ')}`
+    var url = App.event_url+`page=${page}&endDate=${moment().format('ddd MM-DD-YYYY HH:mm:ssZZ')}`
     var res = await fetch(url, {headers: App.headers(token)})
-    if(res.status != 200)
-      _this.setState({error: true})
+    if(res.status != 200) {
+      this.setState({error: true, loading:false})
+    }
 
     if(res.status == 200) {
       var res = await res.json();
@@ -169,7 +170,7 @@ export default class PastListView extends React.Component {
       sorted_events = _.groupBy(events, function(event) {
         return moment(event.startTime).format('dddd MMM Do').toString()
       })
-      _this.setState({loading: false, 
+      this.setState({loading: false, 
                       events: events,
                       loadingMore: false,
                       empty: empty,
@@ -207,7 +208,7 @@ export default class PastListView extends React.Component {
 
   onRefresh = () => {
     this.setState({loading: true})
-    this.loadEvents(0, true)
+    this.loadEvents(0, true).done()
   }
 
   render() {

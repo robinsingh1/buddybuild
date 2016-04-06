@@ -145,19 +145,24 @@ export class AddAvailabilityHeader extends React.Component {
       var url = "https://app.sage.care/api/v1/cp/s/availabilities"
       var data = { method: 'POST', body: JSON.stringify(event), 
                    headers: App.headers(token) }
-      fetch(url, data).then(function(res) {
+      var res =  await fetch(url, data)//.then(function(res) {
+        console.log(res)
         if(res.status == 200) {
-          res = JSON.parse(res._bodyText)
+          //res = JSON.parse(res._bodyText)
+          res = await res.json()
+          console.log(res)
           res = (event.recurring) ? res.availabilities : res.availability
           _this.props.addAvailability(res)
           Actions.pop()
         } else {
+          res = await res.json()
+          console.log(res)
           Alert.alert( 'Warning!', 'There was an error - please try again.',
           [ {text: 'Cancel', onPress: () => { }, style: 'cancel'},
             {text: 'Yes', onPress: () => { }}
           ])
         }
-      })
+        //})
     }
   }
 }

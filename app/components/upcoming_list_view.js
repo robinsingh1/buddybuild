@@ -118,6 +118,7 @@ export default class UpcomingListView extends React.Component {
     }
     if(res.status == 200) {
       var res = await res.json();
+      console.log(res)
       events = res.events
       let empty = !events.length
       events = (replace) ? events : _this.state.events.concat(events) 

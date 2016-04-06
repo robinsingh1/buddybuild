@@ -114,7 +114,7 @@ export default class MedicalSupplyNote extends React.Component {
     var inputs = _.map(_.range(this.state.medicalNotes.length), function(a, b) {
       var style = {marginLeft:50}
       return ( 
-        <TextInput placeholder={"Eggs.."} key={b} 
+        <TextInput placeholder={"Observations.."} key={b} 
                    onChange={(event) => { _this.enterMedical(event) }}
                    underlineColorAndroid={"#C8C8C8"} style={style} />
       )

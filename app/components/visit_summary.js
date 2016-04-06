@@ -289,24 +289,26 @@ export default class VisitSummary extends React.Component {
       this.setState({ checkedOut: moment().valueOf()})
     } else {
       this.setState({loading: true })
+      console.log(this.props.data)
       var token = await store.get("_token")
       let time = moment().valueOf()
       var _this = this;
       var url = `https://app.sage.care/api/v1/cp/s/events/${this.props.data.id}/checkin`
-      geo = {lat: 30, lng: 30}
+      //var url = `http://dev.sage.care/api/v1/cp/s/events/${this.props.data.id}/checkin`
+      console.log(url)
       let body={checkInTime: moment().valueOf(), metadata: {checkInGeolocation: geo}}
       body = JSON.stringify(body)
-      var data  = await fetch(url, { method: 'PUT', headers: App.headers(token), body: body})
-      var res = await data.json()
-      //.then(function(res) {
-        if(res.status == 200) {
-          _this.setState({checkedIn:  time, loading: false})
-          _this.props.updateCheckedinState(_this.props.data.id, time)
-        } else {
-          Alert.alert( 'Warning!', " Warning: We couldn't check you in/out right now due to an error. Please call +1 877-960-0235. ",
-          [{text: 'Cancel', onPress:() => {}}, {text:'Yes', onPress: () => { }}]) 
-          this.setState({loading: false})
-        }
+      var res  = await fetch(url, { method: 'PUT', headers: App.headers(token), body: body})
+      //var res = await data.json()
+
+      if(res.status == 200) {
+        _this.setState({checkedIn:  time, loading: false})
+        //_this.props.updateCheckedinState(_this.props.data.id, time)
+      } else {
+        Alert.alert( 'Warning!', " Warning: We couldn't check you in/out right now due to an error. Please call +1 877-960-0235. ",
+        [{text: 'Cancel', onPress:() => {}}, {text:'Yes', onPress: () => { }}]) 
+        this.setState({loading: false})
+      }
           //})
     }
   }

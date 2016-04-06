@@ -92,7 +92,9 @@ export default class FinishNote extends React.Component {
     var token = await store.get("_token")
     var url = `https://app.sage.care/api/v1/cp/s/events/${this.props._id}/checkout`
     var res = await fetch(url, { method: 'PUT', headers: App.headers(token), body: body})
-    var data = await res.json()
+    //var res = await res.json()
+    console.log(url)
+    console.log(res)
     if(res.status == 200) {
       Actions.launch({type: "replace"})
       this.setState({loading: false})
