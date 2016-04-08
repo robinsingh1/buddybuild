@@ -54,7 +54,7 @@ export default class PastListView extends React.Component {
     let client = rowData.Client
     client.gender = (client.gender) ? client.gender : "M"
     
-    let actualDuration = ""
+    var actualDuration = ""
     if(rowData.checkOutTime) {
       let diff = moment(rowData.checkInTime).diff(moment(rowData.checkOutTime))
       let duration = moment.duration(diff)._data

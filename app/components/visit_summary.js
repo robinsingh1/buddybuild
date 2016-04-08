@@ -58,6 +58,7 @@ class TimingComponent extends React.Component {
   }
 
   render() {
+    checkinTime = (this.props.data.checkInTime) ? this.props.data.checkInTime : this.props.checkinTime
     return (
       <View style={{borderColor:"#ddd",borderWidth:1,flexDirection:'row',
         elevation:1, backgroundColor:"white",width:335,borderRadius:5,
@@ -78,8 +79,8 @@ class TimingComponent extends React.Component {
                 <Text style={{fontSize:12,color:"#949DA9",marginTop:-10,marginLeft:10}}>
                   {mtz(this.props.data.startTime).tz("America/Toronto").format("MMM Do").toString()}  
                 </Text>
-                <Text style={{position:"absolute",top:0,right:20,fontSize:12,color:"#949DA9",marginTop:-11}}>
-                  {(this.props.checkinTime) ? mtz(this.props.checkinTime).tz("America/Toronto").format("h:mm A").toString() : ""}  
+                <Text style={{position:"absolute",top:0,right:20,fontSize:12,color:"#949DA9",marginTop:-11}}> 
+                {mtz(checkinTime).tz("America/Toronto").format("h:mm A").toString()}  
                 </Text>
             </View>
 
@@ -106,6 +107,27 @@ class TimingComponent extends React.Component {
 
 class CompletedView extends React.Component {
   render() {
+    var { checkInTime, checkOutTime }  = this.props
+
+    var actualDuration = ""
+    if(checkOutTime) {
+      let diff = moment(checkInTime).diff(moment(checkOutTime))
+      let duration = moment.duration(diff)._data
+
+      if(duration.days) 
+        actualDuration = Math.abs(duration.days) + " days " 
+      if(duration.hours)
+        actualDuration = actualDuration + Math.abs(duration.hours) + " hours " 
+      if(duration.minutes)
+        actualDuration = actualDuration + Math.abs(duration.minutes) + " mins"
+
+      if(duration.seconds && actualDuration == "")
+        actualDuration = actualDuration + Math.abs(duration.seconds) + " secs"
+
+    } else {
+      let actualDuration = ""
+    }
+
     return (
       <View style={{}}>
         <View style={{flexDirection:"row",alignItems:"center",width:335,height:70,paddingTop:7}}>
@@ -115,18 +137,21 @@ class CompletedView extends React.Component {
             </Text>
             <View style={{height:2,borderWidth:1,borderColor:"black"}}/>
             <Text style={{fontSize:16}}>
-              Duration: 2.1 hrs
+              Duration: {actualDuration}
             </Text>
           </View>
 
           <View style={{marginTop:5,height:85,position:"absolute",right:0}}>
-              <View style={{flexDirection:"row"}}>
-                <Text style={{color:"black",fontSize:12,marginLeft:-4,
-                  marginTop:7}}> {"9:58 am"} </Text>
-              </View>
-              <View style={{flexDirection:"row",marginTop:6,marginLeft:-4}}>
-                <Text style={{color:"black",fontSize:12}}>{"12:01 pm"}</Text>
-              </View>
+            <View style={{flexDirection:"row"}}>
+              <Text style={{color:"black",fontSize:12,marginLeft:-4,marginTop:7}}> 
+                {mtz(this.props.checkInTime).tz("America/Toronto").format("h:mm A").toString()}  
+              </Text>
+            </View>
+            <View style={{flexDirection:"row",marginTop:6,marginLeft:-4}}>
+              <Text style={{color:"black",fontSize:12}}>
+                  {mtz(this.props.checkOutTime).tz("America/Toronto").format("h:mm A").toString()}  
+              </Text>
+            </View>
           </View>
         </View>
       </View>
@@ -343,7 +368,7 @@ export default class VisitSummary extends React.Component {
       <ScrollView style={{marginTop:0,paddingTop:0,height:height,backgroundColor:"#F6F6FB"}}>
        <View style={{backgroundColor:"#F6F6FB",flex:1,alignItems:"center",paddingTop:0}}>
         <View style={{backgroundColor:"#F9F9F9",marginTop:0,height:70,width:400,borderBottomWidth:1,borderBottomColor:"#D2D2D2"}} >
-          { (this.props.completed) ? <CompletedView /> : 
+          { (this.props.completed) ? <CompletedView {...this.props.data} /> : 
             <TouchableOpacity onPress={() => { this._press().done() }} >
                   <View style={{backgroundColor:btnColor,marginLeft:35,padding:5,
                     borderRadius:3,marginTop:10,height:45,width:335,
@@ -360,15 +385,12 @@ export default class VisitSummary extends React.Component {
         <Text style={{textAlign:"center",marginTop:10}}> 
           {client.streetAddress1} 
         </Text>
-
         <Text style={{textAlign:"center"}}> {address} </Text>
         <MapButton address={address} {...this.props}/>
         <TimingComponent checkinTime={this.state.checkedIn} data={this.props.data}/>
-
         <View style={{borderColor:"black"}}>
           <Task details={data.Client.metadata.entryDetails} category={"entry"} />
           <Task details={data.Client.metadata.allergies} category={"alerts"} />
-
           { _.map(data.Tasks, function(task, i) {
               return <Task details={task.details} key={i} category={task.category} />
             })
