@@ -153,7 +153,7 @@ export default class PastListView extends React.Component {
     page = (typeof(page) == "undefined") ? this.state.page : page
     var _this = this;
     var token = await store.get("_token")
-    var url = App.event_url+`page=${page}&endDate=${moment().format('ddd MM-DD-YYYY HH:mm:ssZZ')}`
+    var url = App.event_url+`page=${page}&endDate=${moment().hours(0).minutes(0).seconds(0).format('ddd MM-DD-YYYY HH:mm:ssZZ')}`
     var res = await fetch(url, {headers: App.headers(token)})
     if(res.status != 200) {
       this.setState({error: true, loading:false})
